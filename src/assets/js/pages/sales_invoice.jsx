@@ -463,11 +463,9 @@ function SalesInvoiceCard(){
                                                 {visibleColumns.includes(15) && <td>{formatRupiah(line.price_subtotal)}</td>}
                                                 {visibleColumns.includes(16) && 
                                                 <td>
-                                                    {formatRupiah(line.tax_ids &&
-                                                    line.tax_ids.length > 0 &&
-                                                    line.tax_ids[0][1].match(/\d+%/)
-                                                        ? line.tax_ids
-                                                        : "")}
+                                                    {line.tax_ids && line.tax_ids.length > 0
+                                                    ? parseInt(line.tax_ids[0][1].match(/\d+/)?.[0] || 0, 10)+'%'
+                                                    : 0}
                                                 </td>}
                                                 {visibleColumns.includes(17) && 
                                                 <td>{
