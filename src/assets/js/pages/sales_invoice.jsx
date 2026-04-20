@@ -241,7 +241,7 @@ function SalesInvoiceCard(){
                 const discount = Number(line.discount) || 0;
 
                 const subtotal = qty * price;
-                const discountValue = subtotal * discount;
+                const discountValue = subtotal * discount/100;
 
                 const taxPercent = line.tax_ids && line.tax_ids.length > 0
                 ? parseInt(line.tax_ids[0][1].match(/\d+/)?.[0] || 0, 10)
@@ -444,15 +444,15 @@ function SalesInvoiceCard(){
                                                 {visibleColumns.includes(10) && <td>{line.quantity}</td>}
                                                 {visibleColumns.includes(11) && <td>{formatRupiah(line.price_unit)}</td>}
                                                 {visibleColumns.includes(12) && <td>{formatRupiah(line.quantity*line.price_unit)}</td>}
-                                                {visibleColumns.includes(13) && <td>{line.discount}</td>}
-                                                {visibleColumns.includes(14) && <td>{formatRupiah((line.quantity*line.price_unit)*line.discount)}</td>}
+                                                {visibleColumns.includes(13) && <td>{line.discount}%</td>}
+                                                {visibleColumns.includes(14) && <td>{formatRupiah(((line.quantity*line.price_unit)*line.discount/100))}</td>}
                                                 {visibleColumns.includes(15) && <td>{formatRupiah(line.price_subtotal)}</td>}
                                                 {visibleColumns.includes(16) && 
                                                 <td>
                                                     {formatRupiah(line.tax_ids &&
                                                     line.tax_ids.length > 0 &&
                                                     line.tax_ids[0][1].match(/\d+%/)
-                                                        ? line.tax_ids[0][1].match(/\d+%/)[0]
+                                                        ? line.tax_ids
                                                         : "")}
                                                 </td>}
                                                 {visibleColumns.includes(17) && 
