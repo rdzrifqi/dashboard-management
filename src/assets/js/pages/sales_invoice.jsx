@@ -82,10 +82,24 @@ function SalesInvoiceCard(){
             return;
         }
 
-        const filtered = salesInvoiceData.filter(item =>
-            (item.lines || []).some(line => line.category_name === category)
-        );
-        console.log(filtered);
+        const filtered = salesInvoiceData
+            .map(item => {
+                // filter lines sesuai category
+                const filteredLines = (item.lines || []).filter(
+                    line => line.category_name === category
+                );
+
+                // hanya return item kalau masih ada line
+                if (filteredLines.length > 0) {
+                    return {
+                        ...item,
+                        lines: filteredLines
+                    };
+                }
+
+                return null;
+            })
+            .filter(Boolean); // hapus null
 
         setFilteredData(filtered);
     };
