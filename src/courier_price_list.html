@@ -1,0 +1,141 @@
+{{> partials/main }}
+
+<head>
+
+    {{> partials/title-meta title="Real Estate Dashboard" }}
+
+    {{> partials/head-css }}
+
+    <style>
+        /* Pastikan elemen peta punya tinggi, kalau tidak peta tidak akan terlihat */
+        html,body { height: 100%; margin: 0; }
+        #courierTable {
+            width: 100% !important;
+        }
+        #courierTable thead th {
+            background-color: #2d4169; /* biru */
+            color: white;
+        }
+    </style>
+</head>
+
+{{> partials/body }}
+<script src="assets/js/pages/authMiddleware.js"></script>
+<!-- Start Layout -->
+<div class="bg-slate-50 dark:bg-dark">
+
+    <!-- Start detached bg -->
+    <div class="bg-[url('../images/bg-main.png')] bg-black group-data-[sidebar=dark]/item:bg-darklight group-data-[sidebar=brand]/item:bg-sky-950 min-h-[220px] sm:min-h-[250px] bg-bottom fixed hidden w-full -z-50 detached-img"></div>
+    <!-- End detached bg -->
+
+    <!-- Start Menu Sidebar Overlay -->
+    <div x-cloak class="fixed inset-0 z-10 bg-black/60 dark:bg-dark/90 lg:hidden" :class="{'hidden' : !$store.app.sidebar}" @click="$store.app.toggleSidebar()"></div>
+    <!-- End Menu Sidebar Overlay -->
+
+    <!-- Start Main Content -->
+    <div class="flex mx-auto main-container">
+        {{> partials/sidebar }}
+
+        <!-- Start Content Area -->
+        <div class="flex-1 main-content">
+            {{> partials/topbar }}
+            <!-- Start Content -->
+            <div class="h-[calc(100vh-60px)] relative space-y-4 detached-content">
+                <div id="courierPriceList"></div>
+                <!-- <div class="card m-5 p-0">
+                    <div class="border border-gray-300 border-t-0 border-l-0 border-r-0 p-4 font-bold">
+                        <i class="ri-filter-line"></i> Filter Panel
+                    </div>
+                    <div class="grid grid-cols-4 p-4 gap-4">
+                        <div class="flex flex-col">
+                            <label class="pb-2 font-medium">Date From</label>
+                            <input type="date" class="border border-gray-300 rounded-md"/>
+                        </div>
+                        <div class="flex flex-col">
+                            <label class="pb-2 font-medium">Date To</label>
+                            <input type="date" class="border border-gray-300 rounded-md"/>
+                        </div>
+                        <div class="flex flex-col">
+                            <label class="pb-2 font-medium">Distribution Center</label>
+                            <select class="border border-gray-300 rounded-md">
+                                <option value="All DCs">All DCs</option>
+                                <option value="DC Jakarta Barat">DC Jakarta Barat</option>
+                                <option value="DC Surabaya">DC Surabaya</option>
+                                <option value="DC Medan">DC Medan</option>
+                                <option value="DC Bandung">DC Bandung</option>
+                            </select>
+                        </div>
+                        <div class="flex flex-col">
+                            <label class="pb-2 font-medium">Status</label>
+                            <select class="border border-gray-300 rounded-md">
+                                <option value="">All Status</option>
+                                <option value="fulfilled">Fulfilled</option>
+                                <option value="pending">Pending</option>
+                                <option value="canceled">Cancelled</option>
+                                <option value="partial">Partial</option>
+                                <option value="in_transit">In Transit</option>
+                            </select>
+                        </div>
+                        <div class="flex flex-col">
+                            <label class="pb-2 font-medium">Courier / Vendor</label>
+                            <select class="border border-gray-300 rounded-md">
+                                <option value="all_couriers">All Couriers</option>
+                                <option value="jne">JNE</option>
+                                <option value="JT Express">J&amp;T Express</option>
+                                <option value="sicepat">SiCepat</option>
+                                <option value="anteraja">Anteraja</option>
+                            </select>
+                        </div>
+                        <div class="flex flex-col">
+                            <label class="pb-2 font-medium">Saved Filter</label>
+                            <select class="border border-gray-300 rounded-md">
+                                <option value="">— Load Preset —</option>
+                                <option value="Q1 2026 Default">Q1 2026 Default</option>
+                                <option value="jakarta_only">Jakarta Only</option>
+                                <option value="Fulfilled Orders">Fulfilled Orders</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col gap-4 m-5 mt-0 min-h-[calc(100vh-212px)]">
+                    <div class="grid grid-cols-12 gap-4">
+                        <div class="col-span-12 2xl:col-span-12 order-[17] card">
+                            <div class="grid grid-cols-2 content-between mb-2">
+                                <h4 class="font-semibold pt-1">Data Result</h4>
+                                <div class="flex justify-end gap-1">
+                                    <button id="exportExcel" class="text-right py-1 px-3 font-medium rounded-md border border-gray-400"><i class="ri-file-excel-line text-md"></i> XLSX</button>
+                                    <button id="exportExcel" class="text-right py-1 px-3 font-medium rounded-md border border-gray-400"><i class="ri-file-pdf-2-line text-md"></i> PDF</button>
+                                    <button id="exportExcel" class="text-right py-1 px-3 font-medium rounded-md border border-gray-400"><i class="ri-file-hwp-line text-md"></i> CSV</button>
+                                    <button id="exportExcel" class="text-right py-1 px-3 font-medium rounded-md border border-gray-400"><i class="ri-printer-line text-md"></i> PRINT</button>
+                                    <button id="exportExcel" class="text-right py-1 px-3 font-medium rounded-md border border-gray-400"><i class="ri-layout-vertical-line text-md"></i> Columns</button>
+                                </div>
+                            </div>
+                            <div class="w-full overflow-x-auto">
+                                <table id="courierTable" class="display"></table>
+                            </div>
+                        </div>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </div>
+</div>
+
+{{> partials/vendor-scripts }}
+
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+<script type="module" src="assets/js/main.js"></script>
+<script src="assets/libs/apexcharts/apexcharts.min.js"></script>
+<script type="text/babel" src="assets/js/pages/courier_price_list.jsx"></script>
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="assets/js/pages/courier_price_list.js"></script>
+<script type="module" src="assets/js/pages/logout.js"></script>
+</body>
+
+</html>
