@@ -493,7 +493,7 @@ function SalesInvoiceCard(){
                                 </tbody>
                             </table>
                         </div>
-                        <div class="pt-3 text-right">
+                        {/* <div class="pt-3 text-right">
                             <button 
                                 onClick={() => fetchData(currentPage - 1)} 
                                 disabled={currentPage === 1}
@@ -535,7 +535,7 @@ function SalesInvoiceCard(){
                             >
                                  <i class="ri-arrow-right-double-line"></i>
                             </button>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>
