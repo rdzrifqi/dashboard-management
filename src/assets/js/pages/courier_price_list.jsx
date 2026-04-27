@@ -180,7 +180,7 @@ const CourierTable = () => {
                             <div class="flex justify-end gap-1" ref={filterRef}>
                                 <div class="relative">
                                     <span class="absolute left-3 top-2 text-gray-400">🔍</span>
-                                    <input type="text" value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Search..." className="w-18 pl-10 pr-4 py-1 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple focus:outline-none"/>
+                                    <input type="text" value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Search..." className="w-18 pl-10 pr-4 py-1 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple focus:outline-none dark:text-black"/>
                                 </div>
                                 <button id="exportExcel" class="text-right py-1 px-3 font-medium rounded-md border border-gray-400"><i class="ri-file-excel-line text-md"></i> XLSX</button>
                                 <button id="exportExcel" class="text-right py-1 px-3 font-medium rounded-md border border-gray-400"><i class="ri-file-pdf-2-line text-md"></i> PDF</button>
@@ -194,7 +194,7 @@ const CourierTable = () => {
                                             <div className="flex gap-3">
                                                 <div className="flex-1 flex flex-col">
                                                     {col1.map(col => (
-                                                        <label key={col.index} className="flex items-center cursor-pointer">
+                                                        <label key={col.index} className="flex items-center cursor-pointer dark:text-black">
                                                             <input
                                                                 type="checkbox"
                                                                 checked={visibleColumns.includes(col.index)}
@@ -209,7 +209,7 @@ const CourierTable = () => {
                                                 {/* COL 2 */}
                                                 <div className="flex-1 flex flex-col">
                                                     {col2.map(col => (
-                                                        <label key={col.index} className="flex items-center cursor-pointer">
+                                                        <label key={col.index} className="flex items-center cursor-pointer dark:text-black">
                                                             <input
                                                                 type="checkbox"
                                                                 checked={visibleColumns.includes(col.index)}
@@ -224,7 +224,7 @@ const CourierTable = () => {
                                                 {/* COL 3 */}
                                                 <div className="flex-1 flex flex-col">
                                                     {col3.map(col => (
-                                                        <label key={col.index} className="flex items-center cursor-pointer">
+                                                        <label key={col.index} className="flex items-center cursor-pointer dark:text-black">
                                                             <input
                                                                 type="checkbox"
                                                                 checked={visibleColumns.includes(col.index)}

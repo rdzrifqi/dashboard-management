@@ -355,21 +355,21 @@ function JournalItemCard(){
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start mt-4">
-                    <div class="bg-white rounded-lg shadow p-4">
+                    <div class="bg-white rounded-lg shadow p-4 dark:bg-gray-800">
                         <h3 class="text-lg font-semibold mb-2">Monthly debit vs credit trend</h3>
                         <p class="text-sm text-gray-600">
                             
                         </p>
                     </div>
 
-                    <div class="bg-white rounded-lg shadow p-4">
+                    <div class="bg-white rounded-lg shadow p-4 dark:bg-gray-800">
                         <h3 class="text-lg font-semibold mb-2">Residual Aging Analysis</h3>
                         <p class="text-sm text-gray-600">
                             <div ref={chartRef}></div>
                         </p>
                     </div>
 
-                    <div class="bg-white rounded-lg shadow p-4">
+                    <div class="bg-white rounded-lg shadow p-4 dark:bg-gray-800">
                         <h3 class="text-lg font-semibold mb-2">Top Accounts by Residual</h3>
                         <p class="text-sm text-gray-600 mb-2">
                             <div ref={chartRef2}/>

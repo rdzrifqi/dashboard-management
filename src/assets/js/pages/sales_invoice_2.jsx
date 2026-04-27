@@ -377,15 +377,15 @@ function SalesInvoiceCard(){
                 <div class="grid grid-cols-4 p-4 gap-4">
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Start Date</label>
-                        <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} class="border border-gray-300 rounded-md" />
+                        <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} class="border border-gray-300 rounded-md dark:bg-dark" />
                     </div>
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">End Date</label>
-                        <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)}  class="border border-gray-300 rounded-md"/>
+                        <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)}  class="border border-gray-300 rounded-md dark:bg-dark"/>
                     </div>
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Category</label>
-                        <select value={selectedCategory} onChange={(e) => handleFilterCategory(e.target.value)} className="border border-gray-300 rounded-md">
+                        <select value={selectedCategory} onChange={(e) => handleFilterCategory(e.target.value)} className="border border-gray-300 rounded-md dark:bg-dark">
                             <option value="">All Category</option>
                             {categoryNameData.map(category => (
                                 <option key={category} value={category}>
@@ -407,7 +407,7 @@ function SalesInvoiceCard(){
                                     <button class="text-right py-1 px-3 font-medium rounded-md border border-gray-400" onClick={exportToExcel}><i class="ri-file-excel-line text-md"></i> XLSX</button>&nbsp;
                                     <button onClick={() => setShowColumn(!showColumn)} class="text-right py-1 px-3 font-medium rounded-md border border-gray-400"><i class="ri-layout-vertical-line text-md"></i> Columns</button>
                                     {showColumn && (
-                                        <div className="absolute min-w-96 mt-2 right-0 bg-white dark:bg-slate-800 border border-gray-200 rounded-lg shadow-xl p-4 z-50 whitespace-nowrap">
+                                        <div className="absolute min-w-96 mt-2 right-0 bg-white dark:bg-slate-800 border border-gray-200 rounded-lg shadow-xl p-4 z-50 whitespace-nowrap dark:text-black">
                                             <div className="flex gap-3">
                                                 <div className="flex-1 flex flex-col">
                                                     {col1.map(col => (

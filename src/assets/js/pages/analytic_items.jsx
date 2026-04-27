@@ -301,19 +301,19 @@ function AnalyticItemsCard(){
                     </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start mt-4">
-                    <div className="bg-white rounded-lg shadow p-4">
+                    <div className="bg-white rounded-lg shadow p-4 dark:bg-gray-800">
                         <h3 className="text-lg font-semibold mb-2">Revenue VS Costs</h3>
                         <p className="text-sm text-gray-600">
                             <div ref={chartRef}></div>
                         </p>
                     </div>
-                    <div className="bg-white rounded-lg shadow p-4">
+                    <div className="bg-white rounded-lg shadow p-4 dark:bg-gray-800">
                         <h3 className="text-lg font-semibold mb-2">Distribution by Project</h3>
                         <p className="text-sm text-gray-600">
                             <div ref={chartRef2}/>
                         </p>
                     </div>
-                    <div className="bg-white rounded-lg shadow p-4">
+                    <div className="bg-white rounded-lg shadow p-4 dark:bg-gray-800">
                         <h3 className="text-lg font-semibold mb-2">Partner Contribution</h3>
                         <p className="text-sm text-gray-600 mb-2">
                             <div ref={chartRef3}/>
