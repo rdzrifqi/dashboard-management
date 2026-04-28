@@ -151,7 +151,7 @@ function SalesInvoiceDimCard(){
                             visible: visibleColumns.includes(col.index)
                         })),
                         {
-                            targets: 8,
+                            targets: [6,7],
                             width: "400px",
                             createdCell: function (td) {
                                 $(td).css({
