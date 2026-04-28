@@ -1,7 +1,7 @@
 const {useEffect,useState,useRef}=React;
-function SalesInvoiceCard(){
+function SalesInvoiceDimCard(){
     const tableRef = useRef(null);
-    const [salesInvoiceData,setSalesInvoiceData]=useState([]);
+    const [salesInvoiceDimData,setSalesInvoiceDimData]=useState([]);
     const [filteredData, setFilteredData] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState("");
     const [categoryNameData,setCategoryNameData]=useState([]);
@@ -15,17 +15,16 @@ function SalesInvoiceCard(){
         { label: "No SO", index: 5, default:true },
         { label: "No Invoice", index: 6, default:true },
         { label: "Reference", index: 7, default:true },
-        { label: "Brand", index: 8, default:true },
-        { label: "Deskripsi", index: 9, default:false },
-        { label: "Qty", index: 10, default:false },
-        { label: "Price", index: 11, default:false },
-        { label: "SI Amt Bef. Discount", index: 12, default:false },
-        { label: "Discount", index: 13, default:false },
-        { label: "Total SI Discount", index: 14, default:false },
-        { label: "SI Amt Bef. Tax", index: 15, default:false },
-        { label: "Tax", index: 16, default:false },
-        { label: "Total Tax", index: 17, default:false },
-        { label: "SI Amt Aft. Tax", index: 18, default:false },
+        { label: "Deskripsi", index: 8, default:false },
+        { label: "Qty", index: 9, default:false },
+        { label: "Price", index: 10, default:false },
+        { label: "SI Amt Bef. Discount", index: 11, default:false },
+        { label: "Discount", index: 12, default:false },
+        { label: "Total SI Discount", index: 13, default:false },
+        { label: "SI Amt Bef. Tax", index: 14, default:false },
+        { label: "Tax", index: 15, default:false },
+        { label: "Total Tax", index: 16, default:false },
+        { label: "SI Amt Aft. Tax", index: 17, default:false },
     ];
     const [showColumn, setShowColumn] = useState(false);
     const chunkSize = Math.ceil(columns.length / 3);
@@ -76,23 +75,20 @@ function SalesInvoiceCard(){
     
     useEffect(()=>{
         setLoading(true);
-        axios.get(`${__ODOO_URL__}/api/odoo/mye/get/si?start_date=${startDate}&end_date=${endDate}`)
+        axios.get(`${__ODOO_URL__}/api/odoo/web/dataset/call_kw?start_date=${startDate}&end_date=${endDate}`)
         .then(res=>{
-            setSalesInvoiceData(res.data.data.data);
+            setSalesInvoiceDimData(res.data.data.data);
         })
         .catch(err=>console.error(err))
         .finally(() => {
             setLoading(false);
         });
     },[startDate, endDate]);
+    console.log(salesInvoiceDimData);
     useEffect(() => {
-        setFilteredData(salesInvoiceData);
-        setCategoryNameData(setCategoryNameDatas(salesInvoiceData));
-    }, [salesInvoiceData]);
-    useEffect(() => {
-        if (filteredData.length) {
+        if (salesInvoiceDimData.length) {
 
-            const flatData = filteredData.flatMap(item =>
+            const flatData = salesInvoiceDimData.flatMap(item =>
                 item.lines.map(line => {
                     const qty = Number(line.quantity) || 0;
                     const price = Number(line.price_unit) || 0;
@@ -118,7 +114,6 @@ function SalesInvoiceCard(){
                             item.invoice_origin===false?'-':item.invoice_origin,
                         item.name,
                         item.ref,
-                        line.category_name,
                         line.name,
                         qty,
                         formatRupiah(price),
@@ -135,7 +130,7 @@ function SalesInvoiceCard(){
             );
 
             if (!tableRef.current) {
-                tableRef.current = $('#salesInvoiceTable').DataTable({
+                tableRef.current = $('#salesInvoiceDimTable').DataTable({
                     data: flatData,
                     columns: [
                         {
@@ -171,7 +166,7 @@ function SalesInvoiceCard(){
                 tableRef.current.clear().rows.add(flatData).draw();
             }
         }
-    }, [filteredData]);
+    }, [salesInvoiceDimData]);
     let rowNumber = 1;
     const formatDate = (dateString) => {
         if (!dateString) return "-";
@@ -182,35 +177,6 @@ function SalesInvoiceCard(){
             month: "short",
             year: "numeric",
         });
-    };
-    useEffect(() => {
-        if (tableRef.current) {
-            tableRef.current.search(searchText).draw();
-        }
-    }, [searchText]);
-    const handleFilterCategory = (category) => {
-        setSelectedCategory(category);
-
-        if (!category) {
-            setFilteredData(salesInvoiceData);
-            return;
-        }
-
-        const filtered = salesInvoiceData
-            .map(item => {
-                const filteredLines = (item.lines || []).filter(
-                    line => line.category_name === category
-                );
-
-                if (filteredLines.length > 0) {
-                    return { ...item, lines: filteredLines };
-                }
-
-                return null;
-            })
-            .filter(Boolean);
-
-        setFilteredData(filtered);
     };
 
     const formatMonth = (dateString) => {
@@ -262,15 +228,6 @@ function SalesInvoiceCard(){
             maximumFractionDigits: 2
         }).format(value);
     };
-    const setCategoryNameDatas = (data) => { 
-        const categories = data.flatMap(item =>
-            (item.lines || [])
-                .map(line => line.category_name)
-                .filter(Boolean)
-        );
-
-        return [...new Set(categories)];
-    };
     const autoSizeColumns = (data) => {
         return data[0].map((_, colIndex) => {
             const maxLength = data.reduce((max, row) => {
@@ -286,7 +243,7 @@ function SalesInvoiceCard(){
         const headers = [
             "Invoice Date", "Month", "Year", "Customer",
             "SO Number", "Invoice Number",
-            "Reference", "Brand", "Deskripsi", "Qty",
+            "Reference", "Deskripsi", "Qty",
             "Price", "SI Amt Bef. Discount", "Discount", "Total SI Discount",
             "SI Amt Bef. Tax", "Tax", "Total Tax", "SI Amt Aft. Tax"
         ];
@@ -297,7 +254,7 @@ function SalesInvoiceCard(){
         };
         const currency = "IDR";
         
-        const data = filteredData.flatMap((item) =>
+        const data = salesInvoiceDimData.flatMap((item) =>
             item.lines.map((line) => {
                 const qty = Number(line.quantity) || 0;
                 const price = Number(line.price_unit) || 0;
@@ -321,7 +278,6 @@ function SalesInvoiceCard(){
                     item.invoice_origin==='false'?'-':item.invoice_origin,
                     item.name === false ? '-' : item.name,
                     item.ref,
-                    line.product_id === null ? '-' : line.product_id[1],
                     line.name,
                     qty,
                     price,
@@ -372,7 +328,7 @@ function SalesInvoiceCard(){
         XLSX.utils.book_append_sheet(wb, ws, "Invoice");
         const randomText = Math.random().toString(36).substring(2, 8);
         const randomDate = Date.now();
-        XLSX.writeFile(wb, `Sales Invoice ${randomDate} ${randomText}.xlsx`);
+        XLSX.writeFile(wb, `DIM Sales Invoice ${randomDate} ${randomText}.xlsx`);
     };
     return (
         <div class="pt-4">
@@ -388,17 +344,6 @@ function SalesInvoiceCard(){
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">End Date</label>
                         <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)}  class="border border-gray-300 rounded-md dark:bg-dark"/>
-                    </div>
-                    <div class="flex flex-col">
-                        <label class="pb-2 font-medium">Category</label>
-                        <select value={selectedCategory} onChange={(e) => handleFilterCategory(e.target.value)} className="border border-gray-300 rounded-md dark:bg-dark">
-                            <option value="">All Category</option>
-                            {categoryNameData.map(category => (
-                                <option key={category} value={category}>
-                                    {category}
-                                </option>
-                            ))}
-                        </select>
                     </div>
                 </div>
             </div>
@@ -476,7 +421,7 @@ function SalesInvoiceCard(){
 
                             {/* TABLE */}
                             <div className={`${loading ? "blur-sm pointer-events-none" : ""}`}>
-                                <table id="salesInvoiceTable" className="border min-w-full border-spacing-0 table-auto">
+                                <table id="salesInvoiceDimTable" className="border min-w-full border-spacing-0 table-auto">
                                     <thead className="text-left">
                                         <tr>
                                             {columns.map(col => (
@@ -498,6 +443,6 @@ function SalesInvoiceCard(){
 }
 
 const root = ReactDOM.createRoot(
-    document.getElementById("sales_invoice")
+    document.getElementById("sales_invoice_dim")
 );
-root.render(<SalesInvoiceCard />);
+root.render(<SalesInvoiceDimCard />);

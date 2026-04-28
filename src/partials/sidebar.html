@@ -205,6 +205,21 @@
                         <li><a href="sales_invoice.html"><i class="ri-receipt-fill"></i>&nbsp;Sales Invoice</a></li>
                     </ul>
                 </li>
+                <li class="menu nav-item main-menu">
+                    <a href="javascript:void(0);" class="items-center justify-between text-black nav-link group " :class="{'active' : isActive('report_dim')}" @click="toggle('report_dim' , false)">
+                        <div class="flex items-center">
+                            <span class="ltr:pl-3 rtl:pr-1.5">Report DIM</span>
+                        </div>
+                        <div class="flex items-center justify-center w-4 h-4 dropdown-icon" :class="{'!rotate-180' : isActive('report_dim')}">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 h-6">
+                                <path d="M11.9997 13.1714L16.9495 8.22168L18.3637 9.63589L11.9997 15.9999L5.63574 9.63589L7.04996 8.22168L11.9997 13.1714Z" fill="currentColor"></path>
+                            </svg>
+                        </div>
+                    </a>
+                    <ul x-cloak x-show="isActive('report_dim')" x-collapse class="flex flex-col gap-1 text-black sub-menu dark:text-white/60 group-data-[sidebar=dark]/item:text-white/60 group-data-[sidebar=brand]/item:text-sky-200">
+                        <li><a href="sales_invoice_dim.html"><i class="ri-receipt-fill"></i>&nbsp;Sales Invoice</a></li>
+                    </ul>
+                </li>
                 <!-- <li class="menu nav-item main-menu">
                     <a href="javascript:void(0);" class="items-center justify-between text-black nav-link group" :class="{'active' : isActive('apps')}" @click="toggle('apps' , false)">
                         <div class="flex items-center">
