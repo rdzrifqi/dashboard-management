@@ -49,7 +49,12 @@ async function submitLoginController(data) {
             localStorage.setItem("name", data_.user.name);
             localStorage.setItem("company", data_.user.company);
             localStorage.setItem("id_user", data_.user.id);
-            window.location.href = "/index.html";
+            const name=data_.user.name;
+            if (name !== 'dessy') {
+                window.location.href = "/index.html";
+            }else{
+                window.location.href = "/sales_invoice_dim.html"
+            }
         }
     } catch (err) {
         // Jika response dari backend ada status code
