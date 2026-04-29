@@ -194,7 +194,7 @@ const InventoryBalanceTable = () => {
                             <table border="1">
                                 <thead class="text-left" style={{backgroundColor:'#0d2b5e'}}>
                                     <tr>
-                                        <th class="text-white w-12 sticky left-0 bg-black z-10">No</th>
+                                        <th class="text-white w-12 sticky left-0 bg-black z-4">No</th>
                                         {columns.map(col => 
                                             visibleColumns.includes(col.index) && (
                                                 <th key={col.index} className="text-white">
@@ -209,7 +209,7 @@ const InventoryBalanceTable = () => {
                                 <tbody>
                                     {inventoryBalanceData.map((item, index) => (
                                         <tr key={index} className="align-top">
-                                            <td className="sticky left-0 bg-white z-10">{(currentPage - 1) * limit + index + 1}</td>
+                                            <td className="sticky left-0 bg-white z-4">{(currentPage - 1) * limit + index + 1}</td>
                                             {visibleColumns.includes(1) && <td>{item.brand}</td>}
                                             {visibleColumns.includes(2) && <td>{item.product_code}</td>}
                                             {visibleColumns.includes(3) && <td>{item.product_name}</td>}
