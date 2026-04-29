@@ -50,10 +50,14 @@ async function submitLoginController(data) {
             localStorage.setItem("company", data_.user.company);
             localStorage.setItem("id_user", data_.user.id);
             const name=data_.user.name;
-            if (name !== 'dessy') {
+            if (name !== 'dessy' && name !== 'asen') {
                 window.location.href = "/index.html";
             }else{
-                window.location.href = "/sales_invoice_dim.html"
+                if(name==='asen'){
+                    window.location.href = "/courier_price_list.html";
+                }else{
+                    window.location.href = "/sales_invoice_dim.html"
+                }
             }
         }
     } catch (err) {

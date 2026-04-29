@@ -12,7 +12,7 @@
             <ul class="relative flex flex-col gap-1 " x-data="sidebarMenu">
                 <!-- <h2 class="my-2 text-sm text-slate-500 group-data-[sidebar=dark]/item:text-slate-500 group-data-[sidebar=brand]/item:text-sky-200"><span>Menu</span></h2> -->
                 <div id="clavis_menu" class="hidden">
-                    <li class="menu nav-item main-menu">
+                    <li class="menu nav-item main-menu" id="clavis_dashboard_menu" class="hidden">
                         <a href="javascript:void(0);" class="items-center justify-between text-black nav-link group " :class="{'active' : isActive('dashboard')}" @click="toggle('dashboard' , false)">
                             <div class="flex items-center">
                                 <span class="ltr:pl-3 rtl:pr-1.5">Dashboard</span>
@@ -549,8 +549,14 @@
 <script>
     const company = localStorage.getItem("name");
 
-    if (company !== 'dessy') {
+    if (company !== 'dessy' && company !== 'asen') {
         document.getElementById("clavis_menu").classList.remove("hidden");
+        document.getElementById("clavis_dashboard_menu").classList.remove("hidden");
+    }else{
+        if(company==='asen'){
+            document.getElementById("clavis_menu").classList.remove("hidden");
+            document.getElementById("clavis_dashboard_menu").classList.add("hidden");
+        }
     }
 </script>
 <!-- End sidebar -->
