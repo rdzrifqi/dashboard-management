@@ -110,7 +110,7 @@ export default defineConfig(({ mode }) => {
         publicDir: 'dist',
         server: {
             host:'0.0.0.0',
-            port: 8081,
+            port: 8083,
             hot: true,
             proxy: {
                 '/api': {
