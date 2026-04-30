@@ -3,7 +3,7 @@ const name = localStorage.getItem("name");
 
 if (!token) {
     // not logged in, redirect to login page
-    window.location.href = "/index.html";
+    // window.location.href = "/index.html";
 }
 // window.addEventListener('load', () => {
 //     const path = window.location.pathname;
