@@ -8,6 +8,7 @@ function SalesInvoiceDimCard(){
     const [searchText, setSearchText] = useState("");
     const [loading, setLoading] = useState(false);
     const columns = [
+        { label: "No", index: 0, default: true },
         { label: "Invoice Date", index: 1, default:true },
         { label: "Month", index: 2, default:true },
         { label: "Year", index: 3, default:true },
@@ -41,7 +42,7 @@ function SalesInvoiceDimCard(){
 
         if (!table) return;
 
-        const columnIndex = index - 1;
+        const columnIndex = index;
         const isVisible = table.column(columnIndex).visible();
 
         table.column(columnIndex).visible(!isVisible);
@@ -87,7 +88,6 @@ function SalesInvoiceDimCard(){
     console.log(salesInvoiceDimData);
     useEffect(() => {
         if (salesInvoiceDimData.length) {
-
             const flatData = salesInvoiceDimData.flatMap(item =>
                 item.lines.map(line => {
                     const qty = Number(line.quantity) || 0;
@@ -110,8 +110,8 @@ function SalesInvoiceDimCard(){
                         },
                         formatMonth(item.invoice_date),
                         formatYear(item.invoice_date),
-                            item.invoice_partner_display_name,
-                            item.invoice_origin===false?'-':item.invoice_origin,
+                        item.invoice_partner_display_name,
+                        item.invoice_origin===false?'-':item.invoice_origin,
                         item.name,
                         item.ref,
                         line.name,
@@ -134,24 +134,51 @@ function SalesInvoiceDimCard(){
                     data: flatData,
                     columns: [
                         {
+                            title: "No",
+                            data: null,
+                            orderable: false,
+                            searchable: false,
+                            defaultContent: "",
+                        },
+                        {
                             title: "Invoice Date",
+                            data: 0,
                             render: function (data, type) {
                                 if (type === 'sort') return data.sort;
                                 return data.display;
                             }
                         },
-                        ...columns.slice(1).map(col => ({ title: col.label }))
+                        { title: "Month", data: 1 },
+                        { title: "Year", data: 2 },
+                        { title: "Customer", data: 3 },
+                        { title: "No SO", data: 4 },
+                        { title: "No Invoice", data: 5 },
+                        { title: "Reference", data: 6 },
+                        { title: "Deskripsi", data: 7 },
+                        { title: "Qty", data: 8 },
+                        { title: "Price", data: 9 },
+                        { title: "SI Amt Bef. Discount", data: 10 },
+                        { title: "Discount", data: 11 },
+                        { title: "Total SI Discount", data: 12 },
+                        { title: "SI Amt Bef. Tax", data: 13 },
+                        { title: "Tax", data: 14 },
+                        { title: "Total Tax", data: 15 },
+                        { title: "SI Amt Aft. Tax", data: 16 }
                     ],
-                    order: [[0, 'desc']], 
+                    order: [[1, 'desc']], 
                     scrollX: true,
                     autoWidth: true,
+                    // 🔥 INI KUNCINYA
+                    fixedColumns: {
+                        leftColumns: 1
+                    },
                     columnDefs: [
                         ...columns.map((col, i) => ({
                             targets: i,
                             visible: visibleColumns.includes(col.index)
                         })),
                         {
-                            targets: [6,7],
+                            targets: [7,8],
                             width: "400px",
                             createdCell: function (td) {
                                 $(td).css({
@@ -162,6 +189,14 @@ function SalesInvoiceDimCard(){
                         }
                     ]
                 });
+                tableRef.current.on('order.dt search.dt', function () {
+                    tableRef.current
+                        .column(0, { search: 'applied', order: 'applied' })
+                        .nodes()
+                        .each(function (cell, i) {
+                            cell.innerHTML = i + 1;
+                        });
+                }).draw();
             } else {
                 tableRef.current.clear().rows.add(flatData).draw();
             }
@@ -421,15 +456,15 @@ function SalesInvoiceDimCard(){
 
                             {/* TABLE */}
                             <div className={`${loading ? "blur-sm pointer-events-none" : ""}`}>
-                                <table id="salesInvoiceDimTable" className="border min-w-full border-spacing-0 table-auto">
-                                    <thead className="text-left">
+                                <table id="salesInvoiceDimTable" className="border min-w-full border-spacing-0 table-auto border-black">
+                                    <thead className="text-left border border-black">
                                         <tr>
                                             {columns.map(col => (
                                                 <th key={col.index}>{col.label}</th>
                                             ))}
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody className="border border-black">
                                         
                                     </tbody>
                                 </table>
