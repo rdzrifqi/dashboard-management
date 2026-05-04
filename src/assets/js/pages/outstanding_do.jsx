@@ -113,7 +113,7 @@ const OutstandingDOTable = () => {
     };
     const pages = getPagination(currentPage, totalPages);
     return (
-        <div>
+        <div className="dark:bg-dark">
             <div class="card m-5 p-0">
                 <div class="border border-gray-300 border-t-0 border-l-0 border-r-0 p-4 font-bold">
                     <i class="ri-filter-line"></i> Filter Panel
@@ -121,15 +121,15 @@ const OutstandingDOTable = () => {
                 <div class="grid grid-cols-4 p-4 gap-4">
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Date From</label>
-                        <input type="date" class="border border-gray-300 rounded-md"/>
+                        <input type="date" class="border border-gray-300 rounded-md dark:bg-dark"/>
                     </div>
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Date To</label>
-                        <input type="date" class="border border-gray-300 rounded-md"/>
+                        <input type="date" class="border border-gray-300 rounded-md dark:bg-dark"/>
                     </div>
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Distribution Center</label>
-                        <select class="border border-gray-300 rounded-md">
+                        <select class="border border-gray-300 rounded-md dark:bg-dark">
                             <option value="All DCs">All DCs</option>
                             <option value="DC Jakarta Barat">DC Jakarta Barat</option>
                             <option value="DC Surabaya">DC Surabaya</option>
@@ -139,7 +139,7 @@ const OutstandingDOTable = () => {
                     </div>
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Status</label>
-                        <select class="border border-gray-300 rounded-md">
+                        <select class="border border-gray-300 rounded-md dark:bg-dark">
                             <option value="">All Status</option>
                             <option value="fulfilled">Fulfilled</option>
                             <option value="pending">Pending</option>
@@ -150,7 +150,7 @@ const OutstandingDOTable = () => {
                     </div>
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Courier / Vendor</label>
-                        <select class="border border-gray-300 rounded-md">
+                        <select class="border border-gray-300 rounded-md dark:bg-dark">
                             <option value="all_couriers">All Couriers</option>
                             <option value="jne">JNE</option>
                             <option value="JT Express">J&amp;T Express</option>
@@ -160,7 +160,7 @@ const OutstandingDOTable = () => {
                     </div>
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Saved Filter</label>
-                        <select class="border border-gray-300 rounded-md">
+                        <select class="border border-gray-300 rounded-md dark:bg-dark">
                             <option value="">— Load Preset —</option>
                             <option value="Q1 2026 Default">Q1 2026 Default</option>
                             <option value="jakarta_only">Jakarta Only</option>
@@ -178,7 +178,7 @@ const OutstandingDOTable = () => {
                             <div class="flex justify-end gap-1" ref={filterRef}>
                                 <div class="relative">
                                     <span class="absolute left-3 top-2 text-gray-400">🔍</span>
-                                    <input type="text" value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Search..." className="w-18 pl-10 pr-4 py-1 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple focus:outline-none"/>
+                                    <input type="text" value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Search..." className="w-18 pl-10 pr-4 py-1 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple dark:bg-dark focus:outline-none"/>
                                 </div>
                                 <button id="exportExcel" class="text-right py-1 px-3 font-medium rounded-md border border-gray-400"><i class="ri-file-excel-line text-md"></i> XLSX</button>
                                 <button id="exportExcel" class="text-right py-1 px-3 font-medium rounded-md border border-gray-400"><i class="ri-file-pdf-2-line text-md"></i> PDF</button>
@@ -257,7 +257,7 @@ const OutstandingDOTable = () => {
                                 <tbody>
                                     {outstandingDoData.map((item, index) => (
                                         <tr key={index} className="align-top">
-                                        <td className="sticky left-0 bg-white z-4">{(currentPage - 1) * limit + index + 1}</td>
+                                        <td className="sticky left-0 bg-white dark:bg-dark z-4">{(currentPage - 1) * limit + index + 1}</td>
                                             {visibleColumns.includes(1) && <td>{item.customer}</td>}
                                             {visibleColumns.includes(2) && <td>{item.cust_po_no}</td>}
                                             {visibleColumns.includes(3) && <td>{item.dc_name}</td>}
@@ -282,7 +282,7 @@ const OutstandingDOTable = () => {
                                             {visibleColumns.includes(22) && <td>{item.total_m3_gr}</td>}
                                             {visibleColumns.includes(23) && <td>{item.total_kgs_gr}</td>}
                                             {visibleColumns.includes(24) && <td>{item.print_label_date}</td>}
-                                            <td className="sticky right-0 bg-white z-10"><i class="ri-eye-line"></i><i class="ri-printer-line ml-3"></i></td>
+                                            <td className="sticky right-0 bg-white dark:bg-dark z-10"><i class="ri-eye-line"></i><i class="ri-printer-line ml-3"></i></td>
                                         </tr>
                                     ))}
                                 </tbody>

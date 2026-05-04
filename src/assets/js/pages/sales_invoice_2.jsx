@@ -375,7 +375,7 @@ function SalesInvoiceCard(){
         XLSX.writeFile(wb, `Sales Invoice ${randomDate} ${randomText}.xlsx`);
     };
     return (
-        <div class="pt-4">
+        <div class="pt-4 dark:bg-dark">
             <div class="card m-5 p-0">
                 <div class="border border-gray-300 border-t-0 border-l-0 border-r-0 px-4 py-2 font-bold">
                     <i class="ri-filter-line"></i> Filter
@@ -477,14 +477,14 @@ function SalesInvoiceCard(){
                             {/* TABLE */}
                             <div className={`${loading ? "blur-sm pointer-events-none" : ""}`}>
                                 <table id="salesInvoiceTable" className="border min-w-full border-spacing-0 table-auto">
-                                    <thead className="text-left">
+                                    <thead className="border border-black">
                                         <tr>
                                             {columns.map(col => (
                                                 <th key={col.index}>{col.label}</th>
                                             ))}
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody className="border border-black">
                                         
                                     </tbody>
                                 </table>

@@ -366,7 +366,7 @@ function SalesInvoiceDimCard(){
         XLSX.writeFile(wb, `DIM Sales Invoice ${randomDate} ${randomText}.xlsx`);
     };
     return (
-        <div class="pt-4">
+        <div class="pt-4 dark:bg-dark">
             <div class="card m-5 p-0">
                 <div class="border border-gray-300 border-t-0 border-l-0 border-r-0 px-4 py-2 font-bold">
                     <i class="ri-filter-line"></i> Filter

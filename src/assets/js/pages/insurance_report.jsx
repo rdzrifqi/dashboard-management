@@ -104,7 +104,7 @@ const InsuranceReportTable = () => {
         });
     };
     return (
-        <div>
+        <div className="dark:bg-dark">
             <div class="card m-5 p-0">
                 <div class="border border-gray-300 border-t-0 border-l-0 border-r-0 p-4 font-bold">
                     <i class="ri-filter-line"></i> Filter Panel
@@ -112,15 +112,15 @@ const InsuranceReportTable = () => {
                 <div class="grid grid-cols-4 p-4 gap-4">
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Date From</label>
-                        <input type="date" class="border border-gray-300 rounded-md"/>
+                        <input type="date" class="border border-gray-300 dark:bg-dark rounded-md"/>
                     </div>
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Date To</label>
-                        <input type="date" class="border border-gray-300 rounded-md"/>
+                        <input type="date" class="border border-gray-300 dark:bg-dark rounded-md"/>
                     </div>
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Distribution Center</label>
-                        <select class="border border-gray-300 rounded-md">
+                        <select class="border border-gray-300 rounded-md dark:bg-dark">
                             <option value="All DCs">All DCs</option>
                             <option value="DC Jakarta Barat">DC Jakarta Barat</option>
                             <option value="DC Surabaya">DC Surabaya</option>
@@ -130,7 +130,7 @@ const InsuranceReportTable = () => {
                     </div>
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Status</label>
-                        <select class="border border-gray-300 rounded-md">
+                        <select class="border border-gray-300 rounded-md dark:bg-dark">
                             <option value="">All Status</option>
                             <option value="fulfilled">Fulfilled</option>
                             <option value="pending">Pending</option>
@@ -141,7 +141,7 @@ const InsuranceReportTable = () => {
                     </div>
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Courier / Vendor</label>
-                        <select class="border border-gray-300 rounded-md">
+                        <select class="border border-gray-300 rounded-md dark:bg-dark">
                             <option value="all_couriers">All Couriers</option>
                             <option value="jne">JNE</option>
                             <option value="JT Express">J&amp;T Express</option>
@@ -151,7 +151,7 @@ const InsuranceReportTable = () => {
                     </div>
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Saved Filter</label>
-                        <select class="border border-gray-300 rounded-md">
+                        <select class="border border-gray-300 rounded-md dark:bg-dark">
                             <option value="">— Load Preset —</option>
                             <option value="Q1 2026 Default">Q1 2026 Default</option>
                             <option value="jakarta_only">Jakarta Only</option>
@@ -179,7 +179,7 @@ const InsuranceReportTable = () => {
                                 <div className="relative">
                                     <button onClick={() => setShowColumn(!showColumn)} id="exportExcel" class="text-right py-1 px-3 font-medium rounded-md border border-gray-400"><i class="ri-layout-vertical-line text-md"></i> Columns</button>
                                     {showColumn && (
-                                        <div className="absolute top-full mt-2 right-0 w-auto bg-white dark:bg-slate-800 border border-gray-200 dark:border-darkborder dark:text-dark rounded-lg shadow-xl p-1 z-50">
+                                        <div className="absolute top-full mt-2 right-0 w-auto bg-white dark:bg-slate-800 border border-gray-200 dark:border-darkborder dark:text-black rounded-lg shadow-xl p-1 z-50">
                                             <div class="grid grid-cols-1 gap-3">
                                                 {showColumn && (
                                                     <div>
@@ -207,7 +207,7 @@ const InsuranceReportTable = () => {
                             <table border="1">
                                 <thead class="text-left" style={{backgroundColor:'#0d2b5e'}}>
                                     <tr>
-                                        <th class="text-white w-12 sticky left-0 bg-black z-4">No</th>
+                                        <th class="text-white w-12 sticky left-0 bg-gray-700 dark:bg-blue-950 z-4">No</th>
                                         {columns.map(col => 
                                             visibleColumns.includes(col.index) && (
                                                 <th key={col.index} className="text-white">
@@ -216,13 +216,13 @@ const InsuranceReportTable = () => {
                                             )
                                             
                                         )}
-                                        <th className="text-white sticky right-0 bg-gray-700 z-10">Actions</th>
+                                        <th className="text-white sticky right-0 bg-gray-700 dark:bg-blue-950 z-10">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {insuranceReportData.map((item, index) => (
                                         <tr key={index} className="align-top">
-                                            <td className="sticky left-0 bg-white z-4">{(currentPage - 1) * limit + index + 1}</td>
+                                            <td className="sticky left-0 bg-white dark:bg-blue-950 z-4">{(currentPage - 1) * limit + index + 1}</td>
                                             {visibleColumns.includes(1) && <td>{item.customer}</td>}
                                             {visibleColumns.includes(2) && <td>{item.invoice_no}</td>}
                                             {visibleColumns.includes(3) && <td>{formatDate(item.invoice_date)}</td>}
@@ -231,7 +231,7 @@ const InsuranceReportTable = () => {
                                             {visibleColumns.includes(6) && <td>{item.amount}</td>}
                                             {visibleColumns.includes(7) && <td>{formatDate(item.payment_date)}</td>}
                                             {visibleColumns.includes(8) && <td>{item.payment_days}</td>}
-                                            <td className="sticky right-0 bg-white z-10"><i class="ri-eye-line"></i><i class="ri-printer-line ml-3"></i></td>
+                                            <td className="sticky right-0 bg-white dark:bg-blue-950 z-10"><i class="ri-eye-line"></i><i class="ri-printer-line ml-3"></i></td>
                                         </tr>
                                     ))}
                                 </tbody>

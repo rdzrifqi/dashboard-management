@@ -115,7 +115,7 @@ const CourierTable = () => {
     };
     const pages = getPagination(currentPage, totalPages);
     return (
-        <div>
+        <div className="dark:bg-dark">
             <div class="card m-5 p-0">
                 <div class="border border-gray-300 border-t-0 border-l-0 border-r-0 p-4 font-bold">
                     <i class="ri-filter-line"></i> Filter Panel
@@ -123,15 +123,15 @@ const CourierTable = () => {
                 <div class="grid grid-cols-4 p-4 gap-4">
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Date From</label>
-                        <input type="date" class="border border-gray-300 rounded-md"/>
+                        <input type="date" class="border border-gray-300 dark:bg-dark rounded-md"/>
                     </div>
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Date To</label>
-                        <input type="date" class="border border-gray-300 rounded-md"/>
+                        <input type="date" class="border border-gray-300 dark:bg-dark rounded-md"/>
                     </div>
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Distribution Center</label>
-                        <select class="border border-gray-300 rounded-md">
+                        <select class="border border-gray-300 rounded-md dark:bg-dark">
                             <option value="All DCs">All DCs</option>
                             <option value="DC Jakarta Barat">DC Jakarta Barat</option>
                             <option value="DC Surabaya">DC Surabaya</option>
@@ -141,7 +141,7 @@ const CourierTable = () => {
                     </div>
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Status</label>
-                        <select class="border border-gray-300 rounded-md">
+                        <select class="border border-gray-300 dark:bg-dark rounded-md">
                             <option value="">All Status</option>
                             <option value="fulfilled">Fulfilled</option>
                             <option value="pending">Pending</option>
@@ -152,7 +152,7 @@ const CourierTable = () => {
                     </div>
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Courier / Vendor</label>
-                        <select class="border border-gray-300 rounded-md">
+                        <select class="border border-gray-300 dark:bg-dark rounded-md">
                             <option value="all_couriers">All Couriers</option>
                             <option value="jne">JNE</option>
                             <option value="JT Express">J&amp;T Express</option>
@@ -162,7 +162,7 @@ const CourierTable = () => {
                     </div>
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Saved Filter</label>
-                        <select class="border border-gray-300 rounded-md">
+                        <select class="border border-gray-300 dark:bg-dark rounded-md">
                             <option value="">— Load Preset —</option>
                             <option value="Q1 2026 Default">Q1 2026 Default</option>
                             <option value="jakarta_only">Jakarta Only</option>
@@ -180,7 +180,7 @@ const CourierTable = () => {
                             <div class="flex justify-end gap-1" ref={filterRef}>
                                 <div class="relative">
                                     <span class="absolute left-3 top-2 text-gray-400">🔍</span>
-                                    <input type="text" value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Search..." className="w-18 pl-10 pr-4 py-1 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple focus:outline-none dark:text-black"/>
+                                    <input type="text" value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Search..." className="w-18 pl-10 pr-4 py-1 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple focus:outline-none dark:bg-dark"/>
                                 </div>
                                 <button id="exportExcel" class="text-right py-1 px-3 font-medium rounded-md border border-gray-400"><i class="ri-file-excel-line text-md"></i> XLSX</button>
                                 <button id="exportExcel" class="text-right py-1 px-3 font-medium rounded-md border border-gray-400"><i class="ri-file-pdf-2-line text-md"></i> PDF</button>
@@ -266,7 +266,7 @@ const CourierTable = () => {
 
                                 <thead className="text-left" style={{backgroundColor:'#0d2b5e'}}>
                                     <tr>
-                                        <th className="text-white sticky left-0 bg-black z-4">No</th>
+                                        <th className="text-white sticky left-0 bg-black dark:bg-blue-950 z-4">No</th>
                                         {columns.map(col => 
                                             visibleColumns.includes(col.index) && (
                                                 <th key={col.index} className="text-white">
@@ -274,14 +274,14 @@ const CourierTable = () => {
                                                 </th>
                                             )
                                         )}
-                                        <th className="text-white sticky right-0 bg-gray-700 z-10">Actions</th>
+                                        <th className="text-white sticky right-0 bg-gray-700 dark:bg-blue-950 z-10">Actions</th>
                                     </tr>
                                 </thead>
 
                                 <tbody>
                                     {courierData.map((item, index) => (
                                         <tr key={index} className="align-top">
-                                        <td className="sticky left-0 bg-white z-4">{(currentPage - 1) * limit + index + 1}</td>
+                                        <td className="sticky left-0 bg-white dark:bg-dark z-4">{(currentPage - 1) * limit + index + 1}</td>
                                             {visibleColumns.includes(1) && (
                                                 <td className="break-words whitespace-normal">
                                                     {item.customer_name}
@@ -320,7 +320,7 @@ const CourierTable = () => {
                                             {visibleColumns.includes(25) && <td>{item.lowest_min_kgs}</td>}
                                             {visibleColumns.includes(26) && <td>{item.lowest_price}</td>}
                                             {visibleColumns.includes(27) && <td>{item.base_vendor}</td>}
-                                            <td className="sticky right-0 bg-white z-10"><i class="ri-eye-line"></i><i class="ri-printer-line ml-3"></i></td>
+                                            <td className="sticky right-0 bg-white dark:bg-dark z-10"><i class="ri-eye-line"></i><i class="ri-printer-line ml-3"></i></td>
                                         </tr>
                                     ))}
                                 </tbody>

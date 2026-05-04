@@ -18,6 +18,7 @@ module.exports = {
         'font-semibold',
         'rounded-full',
         'dark:bg-gray-950',
+        'dark:bg-blue-950',
     ],
     darkMode: ['class', '[data-mode="dark"]'],
     theme: {
