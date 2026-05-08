@@ -7,6 +7,7 @@ module.exports = {
     ],
     safelist: [
         'bg-emerald-100',
+        'bg-yellow-500',
         'text-emerald-700',
         'bg-amber-100',
         'text-amber-700',

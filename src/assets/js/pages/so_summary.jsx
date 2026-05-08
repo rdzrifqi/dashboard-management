@@ -323,15 +323,15 @@ const SoSummaryTable = () => {
                 <div class="grid grid-cols-4 p-4 gap-4">
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Date From</label>
-                        <input type="date" class="border border-gray-300 rounded-md"/>
+                        <input type="date" class="border border-gray-300 rounded-md dark:bg-dark"/>
                     </div>
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Date To</label>
-                        <input type="date" class="border border-gray-300 rounded-md"/>
+                        <input type="date" class="border border-gray-300 rounded-md dark:bg-dark"/>
                     </div>
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Distribution Center</label>
-                        <select class="border border-gray-300 rounded-md">
+                        <select class="border border-gray-300 rounded-md dark:bg-dark">
                             <option value="All DCs">All DCs</option>
                             <option value="DC Jakarta Barat">DC Jakarta Barat</option>
                             <option value="DC Surabaya">DC Surabaya</option>
@@ -341,7 +341,7 @@ const SoSummaryTable = () => {
                     </div>
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Status</label>
-                        <select class="border border-gray-300 rounded-md">
+                        <select class="border border-gray-300 rounded-md dark:bg-dark">
                             <option value="">All Status</option>
                             <option value="fulfilled">Fulfilled</option>
                             <option value="pending">Pending</option>
@@ -352,7 +352,7 @@ const SoSummaryTable = () => {
                     </div>
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Courier / Vendor</label>
-                        <select class="border border-gray-300 rounded-md">
+                        <select class="border border-gray-300 rounded-md dark:bg-dark">
                             <option value="all_couriers">All Couriers</option>
                             <option value="jne">JNE</option>
                             <option value="JT Express">J&amp;T Express</option>
@@ -362,7 +362,7 @@ const SoSummaryTable = () => {
                     </div>
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Saved Filter</label>
-                        <select class="border border-gray-300 rounded-md">
+                        <select class="border border-gray-300 rounded-md dark:bg-dark">
                             <option value="">— Load Preset —</option>
                             <option value="Q1 2026 Default">Q1 2026 Default</option>
                             <option value="jakarta_only">Jakarta Only</option>
