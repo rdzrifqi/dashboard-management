@@ -27,6 +27,9 @@ const OrderDashboardTable = () => {
     const [visibleColumns, setVisibleColumns] = useState(
         columns.filter(col => col.default).map(col => col.index)
     );
+    const allColumnIndexes = columns.map(col => col.index);
+
+    const isAllChecked = visibleColumns.length === columns.length;
     const filterRef = useRef(null);
     const toggleColumn = (index) => {
         const table = tableRef.current;
@@ -45,6 +48,27 @@ const OrderDashboardTable = () => {
                 return [...prev, index];
             }
         });
+    };
+    const toggleAllColumns = () => {
+        const table = tableRef.current;
+
+        if (!table) return;
+
+        if (isAllChecked) {
+            // hide all
+            columns.forEach((col, i) => {
+                table.column(i).visible(false);
+            });
+
+            setVisibleColumns([]);
+        } else {
+            // show all
+            columns.forEach((col, i) => {
+                table.column(i).visible(true);
+            });
+
+            setVisibleColumns(allColumnIndexes);
+        }
     };
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -66,6 +90,16 @@ const OrderDashboardTable = () => {
             setLoading(false);
         });
     },[]);
+    const formatDate = (dateString) => {
+        if (!dateString) return "-";
+
+        return new Date(dateString).toLocaleDateString("en-GB", {
+            weekday: "short",
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+        });
+    };
     useEffect(() => {
         if (orderDashboardData.length) {
             orderDashboardData.map(item => {
@@ -90,7 +124,55 @@ const OrderDashboardTable = () => {
                 tableRef.current = $('#orderDashboardTable').DataTable({
                     data: orderDashboardData,
                     columns: [
-                        ...columns.slice(1).map(col => ({ title: col.label }))
+                        { data: "dc", title: "DC" },
+                        { data: "area", title: "Area" },
+                        { data: "city", title: "City" },
+                        { data: "trans", title: "Trans" },
+                        { data: "po_no", title: "PO No" },
+                        {
+                            data: "po_date",
+                            title: "PO Date",
+                            render: function(data) {
+                                return formatDate(data);
+                            }
+                        },
+                        { data: "ctn", title: "CTN" },
+                        {
+                            data: "po",
+                            title: "PO",
+                            render: function(data) {
+                                return formatDate(data);
+                            }
+                        },
+                        {
+                            data: "grn",
+                            title: "GRN",
+                            render: function(data) {
+                                return formatDate(data);
+                            }
+                        },
+                        {
+                            data: "do_date",
+                            title: "DO Date",
+                            render: function(data) {
+                                return formatDate(data);
+                            }
+                        },
+                        {
+                            data: "delivered",
+                            title: "Delivered",
+                            render: function(data) {
+                                return formatDate(data);
+                            }
+                        },
+                        { data: "days", title: "Days" },
+                        {
+                            data: "exp_date",
+                            title: "Exp Date",
+                            render: function(data) {
+                                return formatDate(data);
+                            }
+                        },
                     ],
                     scrollX: true,
                     autoWidth: true,
@@ -179,49 +261,63 @@ const OrderDashboardTable = () => {
                                     <button onClick={() => setShowColumn(!showColumn)} class="text-right py-1 px-3 font-medium rounded-md border border-gray-400"><i class="ri-layout-vertical-line text-md"></i> Columns</button>
                                     {showColumn && (
                                         <div className="absolute min-w-96 mt-2 right-0 bg-white dark:bg-slate-800 border border-gray-200 rounded-lg shadow-xl p-4 z-50 whitespace-nowrap dark:text-black">
-                                            <div className="flex gap-3">
-                                                <div className="flex-1 flex flex-col">
-                                                    {col1.map(col => (
-                                                        <label key={col.index} className="flex items-center cursor-pointer">
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={visibleColumns.includes(col.index)}
-                                                                onChange={() => toggleColumn(col.index)}
-                                                                className="mr-2 cursor-pointer"
-                                                            />
-                                                            <span>{col.label}</span>
-                                                        </label>
-                                                    ))}
-                                                </div>
+                                            <div className="flex flex-col gap-3">
+    
+                                                {/* CHECK ALL */}
+                                                <label className="flex items-center border-b pb-2 font-semibold cursor-pointer">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={isAllChecked}
+                                                        onChange={toggleAllColumns}
+                                                        className="mr-2 cursor-pointer"
+                                                    />
+                                                    <span>Check All Columns</span>
+                                                </label>
 
-                                                {/* COL 2 */}
-                                                <div className="flex-1 flex flex-col">
-                                                    {col2.map(col => (
-                                                        <label key={col.index} className="flex items-center cursor-pointer">
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={visibleColumns.includes(col.index)}
-                                                                onChange={() => toggleColumn(col.index)}
-                                                                className="mr-2 cursor-pointer"
-                                                            />
-                                                            <span>{col.label}</span>
-                                                        </label>
-                                                    ))}
-                                                </div>
+                                                <div className="flex gap-3">
+                                                    <div className="flex-1 flex flex-col">
+                                                        {col1.map(col => (
+                                                            <label key={col.index} className="flex items-center cursor-pointer">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={visibleColumns.includes(col.index)}
+                                                                    onChange={() => toggleColumn(col.index)}
+                                                                    className="mr-2 cursor-pointer"
+                                                                />
+                                                                <span>{col.label}</span>
+                                                            </label>
+                                                        ))}
+                                                    </div>
 
-                                                {/* COL 3 */}
-                                                <div className="flex-1 flex flex-col">
-                                                    {col3.map(col => (
-                                                        <label key={col.index} className="flex items-center cursor-pointer">
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={visibleColumns.includes(col.index)}
-                                                                onChange={() => toggleColumn(col.index)}
-                                                                className="mr-2 cursor-pointer"
-                                                            />
-                                                            <span>{col.label}</span>
-                                                        </label>
-                                                    ))}
+                                                    {/* COL 2 */}
+                                                    <div className="flex-1 flex flex-col">
+                                                        {col2.map(col => (
+                                                            <label key={col.index} className="flex items-center cursor-pointer">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={visibleColumns.includes(col.index)}
+                                                                    onChange={() => toggleColumn(col.index)}
+                                                                    className="mr-2 cursor-pointer"
+                                                                />
+                                                                <span>{col.label}</span>
+                                                            </label>
+                                                        ))}
+                                                    </div>
+
+                                                    {/* COL 3 */}
+                                                    <div className="flex-1 flex flex-col">
+                                                        {col3.map(col => (
+                                                            <label key={col.index} className="flex items-center cursor-pointer">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={visibleColumns.includes(col.index)}
+                                                                    onChange={() => toggleColumn(col.index)}
+                                                                    className="mr-2 cursor-pointer"
+                                                                />
+                                                                <span>{col.label}</span>
+                                                            </label>
+                                                        ))}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

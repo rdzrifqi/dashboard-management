@@ -1,26 +1,100 @@
 const { useEffect, useState, useRef }=React;
 const SellOutCustomerTable = () => {
     const tableRef = useRef();
-    const [sellOutCustumerData, setSellOutCustomerData] = useState([]);
-    const [showColumn, setShowColumn] = useState(false);
-    const filterRef = useRef(null);
+    const [sellOutCustomerData, setSellOutCustomerData] = useState([]);
     const columns = [
-        { label: "Cust PO No", index: 1 },
-        { label: "PO Date", index: 2 },
-        { label: "SO No", index: 3 },
-        { label: "GRN No", index: 4 },
-        { label: "GRN Date", index: 5 },
-        { label: "DO No", index: 6 },
-        { label: "DO Date", index: 7 },
+        { label: "Cust PO No", index: 1, default:true },
+        { label: "PO Date", index: 2, default:true },
+        { label: "SO No", index: 3, default:true },
+        { label: "GRN No", index: 4, default:true },
+        { label: "GRN Date", index: 5, default:true },
+        { label: "DO No", index: 6, default:true },
+        { label: "DO Date", index: 7, default:false },
+        { label: "Shipment Date", index: 8, default:false },
+        { label: "POD Date", index: 9, default:false },
+        { label: "Cust GR No", index: 10, default:false },
+        { label: "Exp Date", index: 11, default:false },
+        { label: "SI No", index: 12, default:false },
+        { label: "SI Date", index: 13, default:false },
+        { label: "eFaktur NO", index: 14, default:false },
+        { label: "Tgl. Kirim Faktur", index: 15, default:false },
+        { label: "Jatuh Tempo Bayar", index: 16, default:false },
+        { label: "No. Kwitansi", index: 17, default:false },
+        { label: "No. TTF", index: 18, default:false },
+        { label: "Customer", index: 19, default:false },
+        { label: "Customer Alias", index: 20, default:false },
+        { label: "DC Name", index: 21, default:false },
+        { label: "Area", index: 22, default:false },
+        { label: "Total SKU", index: 23, default:false },
+        { label: "Qty SO", index: 24, default:false },
+        { label: "Qty SO CTN", index: 25, default:false },
+        { label: "Qty GR", index: 26, default:false },
+        { label: "Qty GRN CTN", index: 27, default:false },
+        { label: "Qty DO", index: 28, default:false },
+        { label: "Qty DO CTN", index: 29, default:false },
+        { label: "DO M3", index: 30, default:false },
+        { label: "DO KGS", index: 31, default:false },
+        { label: "Qty SI", index: 32, default:false },
+        { label: "Qty SI CTN", index: 33, default:false },
+        { label: "DO Amt Bef. Tax", index: 34, default:false },
+        { label: "SI Amt Bef. Tax", index: 35, default:false },
+        { label: "Last Status", index: 36, default:false },
+        { label: "last Update", index: 37, default:false },
+        { label: "Messages", index: 38, default:false },
     ];
-    const tableInstance = useRef(null);
+    const [loading, setLoading] = useState(false);
+    const [showColumn, setShowColumn] = useState(false);
+    const chunkSize = Math.ceil(columns.length / 3);
+
+    const col1 = columns.slice(0, chunkSize);
+    const col2 = columns.slice(chunkSize, chunkSize * 2);
+    const col3 = columns.slice(chunkSize * 2);
+    const [visibleColumns, setVisibleColumns] = useState(
+        columns.filter(col => col.default).map(col => col.index)
+    );
+    
+    const allColumnIndexes = columns.map(col => col.index);
+
+    const isAllChecked = visibleColumns.length === columns.length;
+    const filterRef = useRef(null);
     const toggleColumn = (index) => {
-        if (!tableInstance.current) return;
+        const table = tableRef.current;
 
-        const column = tableInstance.current.column(index);
-        const isVisible = column.visible();
+        if (!table) return;
 
-        column.visible(!isVisible);
+        const columnIndex = index - 1;
+        const isVisible = table.column(columnIndex).visible();
+
+        table.column(columnIndex).visible(!isVisible);
+
+        setVisibleColumns(prev => {
+            if (prev.includes(index)) {
+                return prev.filter(i => i !== index);
+            } else {
+                return [...prev, index];
+            }
+        });
+    };
+    const toggleAllColumns = () => {
+        const table = tableRef.current;
+
+        if (!table) return;
+
+        if (isAllChecked) {
+            // hide all
+            columns.forEach((col, i) => {
+                table.column(i).visible(false);
+            });
+
+            setVisibleColumns([]);
+        } else {
+            // show all
+            columns.forEach((col, i) => {
+                table.column(i).visible(true);
+            });
+
+            setVisibleColumns(allColumnIndexes);
+        }
     };
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -31,44 +105,218 @@ const SellOutCustomerTable = () => {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
-    
-    useEffect(() => {
+    useEffect(()=>{
+        setLoading(true);
         axios.get(`${__API_URL__}/sell_out_customer/master`)
-            .then(res => setSellOutCustomerData(res.data))
-            .catch(err => console.error(err));
-    }, []); 
+        .then(res=>{
+            setSellOutCustomerData(res.data);
+        })
+        .catch(err=>console.error(err))
+        .finally(() => {
+            setLoading(false);
+        });
+    },[]);
     useEffect(() => {
-        if (!sellOutCustumerData || sellOutCustumerData.length === 0) return;
+        if (sellOutCustomerData.length) {
+            sellOutCustomerData.map(item => {
+                return [
+                    item.cust_po_no,
+                    item.po_date,
+                    item.so_no,
+                    item.grn_no,
+                    item.grn_date,
+                    item.do_no,
+                    item.do_date,
+                    item.shipment_date,
+                    item.pod_date,
+                    item.cust_gr_no,
+                    item.exp_date,
+                    item.si_no,
+                    item.si_date,
+                    item.efaktur_no,
+                    item.tgl_kirim_faktur,
+                    item.jatuh_tempo_bayar,
+                    item.no_kwitansi,
+                    item.no_ttf,
+                    item.customer,
+                    item.customer_alias,
+                    item.dc_name,
+                    item.area,
+                    item.total_sku,
+                    item.qty_so,
+                    item.qty_so_ctn,
+                    item.qty_gr,
+                    item.qty_grn_ctn,
+                    item.qty_do,
+                    item.qty_do_ctn,
+                    item.do_m3,
+                    item.do_kgs,
+                    item.qty_si,
+                    item.qty_si_ctn,
+                    item.do_amt_bef_tax,
+                    item.si_amt_bef_tax,
+                    item.last_status,
+                    item.last_update,
+                    item.messages,
+                ];
+            });
 
-        // destroy jika sudah ada
-        if (tableInstance.current) {
-            tableInstance.current.destroy();
+            if (!tableRef.current) {
+                tableRef.current = $('#sellOutCustomerTable').DataTable({
+                    data: sellOutCustomerData,
+                    columns: [
+                        { data: "cust_po_no", title: "Cust PO No" },
+                        {
+                            data: "po_date",
+                            title: "PO Date",
+                            render: function(data) {
+                                return formatDate(data);
+                            }
+                        },
+                        { data: "so_no", title: "SO No" },
+                        { data: "grn_no", title: "GRN No" },
+                        {
+                            data: "grn_date",
+                            title: "GRN Date",
+                            render: function(data) {
+                                return formatDate(data);
+                            }
+                        },
+                        { data: "do_no", title: "DO No" },
+                        {
+                            data: "do_date",
+                            title: "DO Date",
+                            render: function(data) {
+                                return formatDate(data);
+                            }
+                        },
+                        {
+                            data: "shipment_date",
+                            title: "Shipment Date",
+                            render: function(data) {
+                                return formatDate(data);
+                            }
+                        },
+                        {
+                            data: "pod_date",
+                            title: "POD Date",
+                            render: function(data) {
+                                return formatDate(data);
+                            }
+                        },
+                        { data: "cust_gr_no", title: "Cust GR No" },
+                        {
+                            data: "exp_date",
+                            title: "Exp Date",
+                            render: function(data) {
+                                return formatDate(data);
+                            }
+                        },
+                        { data: "si_no", title: "SI No" },
+                        {
+                            data: "si_date",
+                            title: "SI Date",
+                            render: function(data) {
+                                return formatDate(data);
+                            }
+                        },
+                        { data: "efaktur_no", title: "eFaktur NO" },
+                        {
+                            data: "tgl_kirim_faktur",
+                            title: "Tgl. Kirim Faktur",
+                            render: function(data) {
+                                return formatDate(data);
+                            }
+                        },
+                        {
+                            data: "jatuh_tempo_bayar",
+                            title: "Jatuh Tempo Bayar",
+                            render: function(data) {
+                                return formatDate(data);
+                            }
+                        },
+                        { data: "no_kwitansi", title: "No. Kwitansi" },
+                        { data: "no_ttf", title: "No. TTF" },
+                        { data: "customer", title: "Customer" },
+                        { data: "customer_alias", title: "Customer Alias" },
+                        { data: "dc_name", title: "DC Name" },
+                        { data: "area", title: "Area" },
+                        { data: "total_sku", title: "Total SKU" },
+                        { data: "qty_so", title: "Qty SO" },
+                        { data: "qty_so_ctn", title: "Qty SO CTN" },
+                        { data: "qty_gr", title: "Qty GR" },
+                        { data: "qty_grn_ctn", title: "Qty GRN CTN" },
+                        { data: "qty_do", title: "Qty DO" },
+                        { data: "qty_do_ctn", title: "Qty DO CTN" },
+                        { data: "do_m3", title: "DO M3" },
+                        { data: "do_kgs", title: "DO KGS" },
+                        { data: "qty_si", title: "Qty SI" },
+                        { data: "qty_si_ctn", title: "Qty SI CTN" },
+                        {
+                            data: "do_amt_bef_tax",
+                            title: "DO Amt Bef. Tax",
+                            render: function(data) {
+                                return formatRupiah(data);
+                            }
+                        },
+                        {
+                            data: "si_amt_bef_tax",
+                            title: "SI Amt Bef. Tax",
+                            render: function(data) {
+                                return formatRupiah(data);
+                            }
+                        },
+                        { data: "last_status", title: "Last Status" },
+                        { data: "last_update", title: "last Update" },
+                        { data: "messages", title: "Messages" },
+                    ],
+                    scrollX: true,
+                    autoWidth: true,
+                    columnDefs: [
+                        ...columns.map((col, i) => ({
+                            targets: i,
+                            visible: visibleColumns.includes(col.index)
+                        })),
+                    ]
+                });
+            } else {
+                tableRef.current.clear().rows.add(sellOutCustomerData).draw();
+            }
+        }
+    }, [sellOutCustomerData]);
+    const formatDate = (dateString) => {
+        if (!dateString) return "-";
+
+        return new Date(dateString).toLocaleDateString("en-GB", {
+            weekday: "short",
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+        });
+    };
+    const formatRupiah = (value, options = {}) => {
+        const {
+            minimumFractionDigits = 2,
+            maximumFractionDigits = 2,
+            rounding = 'round', // 'round' | 'ceil' | 'floor'
+        } = options;
+
+        let number = Number(value) || 0;
+
+        // Handle rounding
+        if (rounding === 'ceil') {
+            number = Math.ceil(number * 100) / 100;
+        } else if (rounding === 'floor') {
+            number = Math.floor(number * 100) / 100;
+        } else {
+            number = Math.round(number * 100) / 100;
         }
 
-        tableInstance.current = $(tableRef.current).DataTable({
-            data: sellOutCustumerData, 
-            columns: [
-                {
-                    title: "No",
-                    data: null,
-                    render: (data, type, row, meta) => meta.row + 1,
-                },
-                { title: "Cust PO No", data: "cust_po_no" },
-                { title: "PO Date", data: "po_date" },
-                { title: "SO No", data: "so_no" },
-                { title: "GRN No", data: "grn_no" },
-                { title: "GRN Date", data: "grn_date" },
-                { title: "DO No", data: "do_no" },
-                { title: "DO Date", data: "do_date" },
-            ],
-        });
-
-        return () => {
-            if (tableInstance.current) {
-                tableInstance.current.destroy();
-            }
-        };
-    }, [sellOutCustumerData]);
+        return new Intl.NumberFormat('en-US', {
+            minimumFractionDigits,
+            maximumFractionDigits,
+        }).format(number);
+    };
     return (
         <div>
             <div class="card m-5 p-0">
@@ -139,34 +387,97 @@ const SellOutCustomerTable = () => {
                                 <button id="exportExcel" class="text-right py-1 px-3 font-medium rounded-md border border-gray-400"><i class="ri-printer-line text-md"></i> PRINT</button>
                                 
                                 <div className="relative">
-                                    <button onClick={() => setShowColumn(!showColumn)} id="exportExcel" class="text-right py-1 px-3 font-medium rounded-md border border-gray-400"><i class="ri-layout-vertical-line text-md"></i> Columns</button>
+                                    <button onClick={() => setShowColumn(!showColumn)} class="text-right py-1 px-3 font-medium rounded-md border border-gray-400"><i class="ri-layout-vertical-line text-md"></i> Columns</button>
                                     {showColumn && (
-                                        <div className="absolute top-full mt-2 right-0 w-auto bg-white dark:bg-slate-800 border border-gray-200 dark:border-darkborder rounded-lg shadow-xl p-1 z-50">
-                                            <div class="grid grid-cols-1 gap-3">
-                                                {showColumn && (
-                                                    <div>
-                                                        {/* 👉 RENDER DI SINI */}
-                                                        {columns.map(col => (
-                                                            <label key={col.index} className="inline-flex cursor-pointer">
+                                        <div className="absolute min-w-96 mt-2 right-0 bg-white dark:bg-slate-800 border border-gray-200 rounded-lg shadow-xl p-4 z-50 whitespace-nowrap dark:text-black">
+                                            <div className="flex flex-col gap-3">
+    
+                                                {/* CHECK ALL */}
+                                                <label className="flex items-center border-b pb-2 font-semibold cursor-pointer">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={isAllChecked}
+                                                        onChange={toggleAllColumns}
+                                                        className="mr-2 cursor-pointer"
+                                                    />
+                                                    <span>Check All Columns</span>
+                                                </label>
+                                                <div className="flex gap-3">
+                                                    <div className="flex-1 flex flex-col">
+                                                        {col1.map(col => (
+                                                            <label key={col.index} className="flex items-center cursor-pointer">
                                                                 <input
                                                                     type="checkbox"
-                                                                    defaultChecked
+                                                                    checked={visibleColumns.includes(col.index)}
                                                                     onChange={() => toggleColumn(col.index)}
-                                                                    class="form-checkbox text-primary"
+                                                                    className="mr-2 cursor-pointer"
                                                                 />
-                                                                <span>&nbsp;{col.label}</span>
+                                                                <span>{col.label}</span>
                                                             </label>
                                                         ))}
                                                     </div>
-                                                )}
+
+                                                    {/* COL 2 */}
+                                                    <div className="flex-1 flex flex-col">
+                                                        {col2.map(col => (
+                                                            <label key={col.index} className="flex items-center cursor-pointer">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={visibleColumns.includes(col.index)}
+                                                                    onChange={() => toggleColumn(col.index)}
+                                                                    className="mr-2 cursor-pointer"
+                                                                />
+                                                                <span>{col.label}</span>
+                                                            </label>
+                                                        ))}
+                                                    </div>
+
+                                                    {/* COL 3 */}
+                                                    <div className="flex-1 flex flex-col">
+                                                        {col3.map(col => (
+                                                            <label key={col.index} className="flex items-center cursor-pointer">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={visibleColumns.includes(col.index)}
+                                                                    onChange={() => toggleColumn(col.index)}
+                                                                    className="mr-2 cursor-pointer"
+                                                                />
+                                                                <span>{col.label}</span>
+                                                            </label>
+                                                        ))}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     )}
                                 </div>
                             </div>
                         </div>
-                        <div class="w-full overflow-x-auto">
-                            <table ref={tableRef} className="display" style={{ width: "100%" }} />
+                        <div className="relative overflow-x-auto w-full">
+                            {loading && (
+                                <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+                                    <div className="flex flex-col items-center gap-2">
+                                        <i className="ri-loader-4-line animate-spin text-3xl"></i>
+                                        <span className="text-sm font-medium">Loading...</span>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TABLE */}
+                            <div className={`${loading ? "blur-sm pointer-events-none" : ""}`}>
+                                <table id="sellOutCustomerTable" className="border min-w-full border-spacing-0 table-auto">
+                                    <thead className="text-left">
+                                        <tr>
+                                            {columns.map(col => (
+                                                <th key={col.index}>{col.label}</th>
+                                            ))}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -176,6 +487,6 @@ const SellOutCustomerTable = () => {
 };
 
 const root = ReactDOM.createRoot(
-    document.getElementById("sell_out_customers")
+    document.getElementById("sell_out_customer")
 );
 root.render(<SellOutCustomerTable />);

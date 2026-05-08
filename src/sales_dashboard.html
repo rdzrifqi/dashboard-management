@@ -9,10 +9,10 @@
     <style>
         /* Pastikan elemen peta punya tinggi, kalau tidak peta tidak akan terlihat */
         html,body { height: 100%; margin: 0; }
-        #soSummaryTable {
+        #salesDashboardTable {
             width: 100% !important;
         }
-        #soSummaryTable thead th {
+        #salesDashboardTable thead th {
             background-color: #2d4169; /* biru */
             color: white;
         }
@@ -41,7 +41,7 @@
             {{> partials/topbar }}
             <!-- Start Content -->
             <div class="h-[calc(100vh-60px)] relative space-y-4 detached-content">
-                <div id="so_summary"></div>
+                <div id="sales_dashboard"></div>
             </div>
         </div>
     </div>
@@ -54,12 +54,11 @@
 <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 <script type="module" src="assets/js/main.js"></script>
 <script src="assets/libs/apexcharts/apexcharts.min.js"></script>
-<script type="text/babel" src="assets/js/pages/courier_price_list.jsx"></script>
+<script type="text/babel" src="assets/js/pages/sales_dashboard.jsx"></script>
 <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="assets/js/pages/so_summary.jsx"></script>
 <script type="module" src="assets/js/pages/logout.js"></script>
 </body>
 

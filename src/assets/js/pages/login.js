@@ -43,6 +43,7 @@ async function submitLoginController(data) {
     try {
         const registerPoint = await axios.post(`${__API_URL__}/user/login`, data);
         const data_ = registerPoint.data;
+        let page=[];
 
         if (registerPoint.status === 200) {
             localStorage.setItem("token", data_.token);
@@ -50,14 +51,31 @@ async function submitLoginController(data) {
             localStorage.setItem("company", data_.user.company);
             localStorage.setItem("id_user", data_.user.id);
             const name=data_.user.name;
-            if (name !== 'dessy' && name !== 'asen') {
-                window.location.href = "/index.html";
-            }else{
-                if(name==='asen'){
-                    window.location.href = "/courier_price_list.html";
-                }else{
-                    window.location.href = "/sales_invoice_dim.html"
-                }
+            const id_user=data_.user.id;
+            try{
+                const response = await axios.get(
+                    `${__API_URL__}/user_page/get_this_user_page`,
+                    {
+                        params: { user_id: id_user }
+                    }
+                );
+                const pageData=response.data[0].map(Number);
+                pageData.sort((a, b) => a - b);
+
+                // 🔹 ambil detail page
+                const pageData2 = await axios.get(
+                    `${__API_URL__}/page/get_this_user_page_2`,
+                    {
+                        params: { id_page: pageData.join(',') }
+                    }
+                );
+
+                const firstLevel = pageData2.data.find(item => item.level === 2);
+                console.log(firstLevel.page_name)
+                window.location.href = "/"+firstLevel.page_name+".html";
+                
+            } catch (err) {
+                console.error("Gagal fetch:", err);
             }
         }
     } catch (err) {

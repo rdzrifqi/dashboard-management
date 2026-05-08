@@ -1,14 +1,17 @@
 const { useEffect, useState, useRef }=React;
-const SoSummaryTable = () => {
+const SalesDashboardTable = () => {
     const tableRef = useRef();
-    const [soSummaryData, setSoSummaryData] = useState([]);
+    const [salesDashboardData, setSalesDashboardData] = useState([]);
     const [showColumn, setShowColumn] = useState(false);
     const filterRef = useRef(null);
     const columns = [
-        { label: "SO Number", index: 1 },
-        { label: "Customer Name", index: 2 },
-        { label: "SO Date", index: 3 },
-        { label: "SO Qty", index: 4 },
+        { label: "SO", index: 1 },
+        { label: "GR", index: 2 },
+        { label: "POD", index: 3 },
+        { label: "si_1", index: 4 },
+        { label: "si_do", index: 5 },
+        { label: "si_2", index: 6 },
+        { label: "total", index: 7 },
     ];
     const tableInstance = useRef(null);
     const toggleColumn = (index) => {
@@ -30,12 +33,12 @@ const SoSummaryTable = () => {
     }, []);
     
     useEffect(() => {
-        axios.get(`${__API_URL__}/so_summary/master`)
-            .then(res => setSoSummaryData(res.data))
+        axios.get(`${__API_URL__}/sales_dashboard/master`)
+            .then(res => setSalesDashboardData(res.data))
             .catch(err => console.error(err));
     }, []); 
     useEffect(() => {
-        if (!soSummaryData || soSummaryData.length === 0) return;
+        if (!salesDashboardData || salesDashboardData.length === 0) return;
 
         // destroy jika sudah ada
         if (tableInstance.current) {
@@ -43,17 +46,20 @@ const SoSummaryTable = () => {
         }
 
         tableInstance.current = $(tableRef.current).DataTable({
-            data: soSummaryData, 
+            data: salesDashboardData, 
             columns: [
                 {
                     title: "No",
                     data: null,
                     render: (data, type, row, meta) => meta.row + 1,
                 },
-                { title: "SO Number", data: "so_no" },
-                { title: "Customer Name", data: "customer_name" },
-                { title: "SO Date", data: "so_date" },
-                { title: "SO Quantity", data: "so_qty_pcs" },
+                { title: "SO", data: "so" },
+                { title: "GR", data: "gr" },
+                { title: "POD", data: "pod" },
+                { title: "SI 1", data: "si_1" },
+                { title: "SI Do", data: "si_do" },
+                { title: "SI 2", data: "si_2" },
+                { title: "Total", data: "total" },
             ],
         });
 
@@ -62,7 +68,7 @@ const SoSummaryTable = () => {
                 tableInstance.current.destroy();
             }
         };
-    }, [soSummaryData]);
+    }, [salesDashboardData]);
     return (
         <div>
             <div class="card m-5 p-0">
@@ -170,6 +176,6 @@ const SoSummaryTable = () => {
 };
 
 const root = ReactDOM.createRoot(
-    document.getElementById("so_summary")
+    document.getElementById("sales_dashboard")
 );
-root.render(<SoSummaryTable />);
+root.render(<SalesDashboardTable />);

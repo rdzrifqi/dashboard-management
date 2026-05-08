@@ -1,28 +1,79 @@
 const { useEffect, useState, useRef }=React;
 const OutstandingPRTable = () => {
     const tableRef = useRef();
-    const [outstandingPrData, setOutstandingPrData] = useState([]);
-    const [showColumn, setShowColumn] = useState(false);
-    const filterRef = useRef(null);
+    const [outstandingPRData, setOutstandingPRData] = useState([]);
     const columns = [
-        { label: "Cust PO No", index: 1 },
-        { label: "Customer", index: 2 },
-        { label: "Ship To", index: 3 },
-        { label: "SO Date", index: 4 },
-        { label: "Cancelled Date", index: 5 },
-        { label: "Product Code", index: 6 },
-        { label: "Doc Type", index: 7 },
-        { label: "Qty Doc", index: 8 },
-        { label: "Qty Cancelled", index: 9 }
+        { label: "Cust PO No", index: 1, default:true },
+        { label: "Customer", index: 2, default:true },
+        { label: "Ship To", index: 3, default:true },
+        { label: "SO Date", index: 4, default:true },
+        { label: "Cancelled Date", index: 5, default:true },
+        { label: "Product Code", index: 6, default:true },
+        { label: "Doc Type", index: 7, default:false },
+        { label: "Qty Doc", index: 8, default:false },
+        { label: "Qty Cancelled", index: 9, default:false },
+        { label: "Std Pack", index: 10, default:false },
+        { label: "Qty Doc CTN", index: 11, default:false },
+        { label: "Qty Cancelled CTN", index: 12, default:false },
+        { label: "Cancel Code", index: 13, default:false },
+        { label: "Cancel Desc", index: 14, default:false },
+        { label: "Cancel Remark", index: 15, default:false },
+        { label: "Return To MTI", index: 16, default:false },
+        { label: "Messages", index: 17, default:false },
     ];
-    const tableInstance = useRef(null);
+    const [loading, setLoading] = useState(false);
+    const [showColumn, setShowColumn] = useState(false);
+    const chunkSize = Math.ceil(columns.length / 3);
+
+    const col1 = columns.slice(0, chunkSize);
+    const col2 = columns.slice(chunkSize, chunkSize * 2);
+    const col3 = columns.slice(chunkSize * 2);
+    const [visibleColumns, setVisibleColumns] = useState(
+        columns.filter(col => col.default).map(col => col.index)
+    );
+    
+    const allColumnIndexes = columns.map(col => col.index);
+
+    const isAllChecked = visibleColumns.length === columns.length;
+    const filterRef = useRef(null);
     const toggleColumn = (index) => {
-        if (!tableInstance.current) return;
+        const table = tableRef.current;
 
-        const column = tableInstance.current.column(index);
-        const isVisible = column.visible();
+        if (!table) return;
 
-        column.visible(!isVisible);
+        const columnIndex = index - 1;
+        const isVisible = table.column(columnIndex).visible();
+
+        table.column(columnIndex).visible(!isVisible);
+
+        setVisibleColumns(prev => {
+            if (prev.includes(index)) {
+                return prev.filter(i => i !== index);
+            } else {
+                return [...prev, index];
+            }
+        });
+    };
+    const toggleAllColumns = () => {
+        const table = tableRef.current;
+
+        if (!table) return;
+
+        if (isAllChecked) {
+            // hide all
+            columns.forEach((col, i) => {
+                table.column(i).visible(false);
+            });
+
+            setVisibleColumns([]);
+        } else {
+            // show all
+            columns.forEach((col, i) => {
+                table.column(i).visible(true);
+            });
+
+            setVisibleColumns(allColumnIndexes);
+        }
     };
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -33,46 +84,122 @@ const OutstandingPRTable = () => {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
-    
-    useEffect(() => {
+    useEffect(()=>{
+        setLoading(true);
         axios.get(`${__API_URL__}/outstanding_pr/master`)
-            .then(res => setOutstandingPrData(res.data))
-            .catch(err => console.error(err));
-    }, []); 
+        .then(res=>{
+            setOutstandingPRData(res.data);
+        })
+        .catch(err=>console.error(err))
+        .finally(() => {
+            setLoading(false);
+        });
+    },[]);
     useEffect(() => {
-        if (!outstandingPrData || outstandingPrData.length === 0) return;
+        if (outstandingPRData.length) {
+            outstandingPRData.map(item => {
+                return [
+                    item.cust_po_no,
+                    item.customer,
+                    item.ship_to,
+                    item.so_date,
+                    item.cancelled_date,
+                    item.product_code,
+                    item.doc_type,
+                    item.qty_doc,
+                    item.qty_cancelled,
+                    item.std_pack,
+                    item.qty_doc_ctn,
+                    item.qty_cancelled_ctn,
+                    item.cancel_code,
+                    item.cancel_desc,
+                    item.cancel_remark,
+                    item.return_to_mti,
+                    item.messages,
+                ];
+            });
 
-        // destroy jika sudah ada
-        if (tableInstance.current) {
-            tableInstance.current.destroy();
+            if (!tableRef.current) {
+                tableRef.current = $('#outstandingPRTable').DataTable({
+                    data: outstandingPRData,
+                    columns: [
+                        { data: "cust_po_no", title: "Cust PO No" },
+                        { data: "customer", title: "Customer" },
+                        { data: "ship_to", title: "Ship To" },
+                        {
+                            data: "so_date",
+                            title: "SO Date",
+                            render: function(data) {
+                                return formatDate(data);
+                            }
+                        },
+                        {
+                            data: "cancelled_date",
+                            title: "Cancelled Date",
+                            render: function(data) {
+                                return formatDate(data);
+                            }
+                        },
+                        { data: "product_code", title: "Product Code" },
+                        { data: "doc_type", title: "Doc Type" },
+                        { data: "qty_doc", title: "Qty Doc" },
+                        { data: "qty_cancelled", title: "Qty Cancelled" },
+                        { data: "std_pack", title: "Std Pack" },
+                        { data: "qty_doc_ctn", title: "Qty Doc CTN" },
+                        { data: "qty_cancelled_ctn", title: "Qty Cancelled CTN" },
+                        { data: "cancel_code", title: "Cancel Code" },
+                        { data: "cancel_desc", title: "Cancel Desc" },
+                        { data: "cancel_remark", title: "Cancel Remark" },
+                        { data: "return_to_mti", title: "Return To MTI" },
+                        { data: "messages", title: "Messages" },
+                    ],
+                    scrollX: true,
+                    autoWidth: true,
+                    columnDefs: [
+                        ...columns.map((col, i) => ({
+                            targets: i,
+                            visible: visibleColumns.includes(col.index)
+                        })),
+                    ]
+                });
+            } else {
+                tableRef.current.clear().rows.add(outstandingPRData).draw();
+            }
+        }
+    }, [outstandingPRData]);
+    const formatDate = (dateString) => {
+        if (!dateString) return "-";
+
+        return new Date(dateString).toLocaleDateString("en-GB", {
+            weekday: "short",
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+        });
+    };
+    const formatRupiah = (value, options = {}) => {
+        const {
+            minimumFractionDigits = 2,
+            maximumFractionDigits = 2,
+            rounding = 'round', // 'round' | 'ceil' | 'floor'
+        } = options;
+
+        let number = Number(value) || 0;
+
+        // Handle rounding
+        if (rounding === 'ceil') {
+            number = Math.ceil(number * 100) / 100;
+        } else if (rounding === 'floor') {
+            number = Math.floor(number * 100) / 100;
+        } else {
+            number = Math.round(number * 100) / 100;
         }
 
-        tableInstance.current = $(tableRef.current).DataTable({
-            data: outstandingPrData, 
-            columns: [
-                {
-                    title: "No",
-                    data: null,
-                    render: (data, type, row, meta) => meta.row + 1,
-                },
-                { title: "Cust PO No", data: "cust_po_no" },
-                { title: "Customer", data: "customer" },
-                { title: "Ship To", data: "ship_to" },
-                { title: "SO Date", data: "so_date" },
-                { title: "Cancelled Date", data: "cancelled_date" },
-                { title: "Product Code", data: "product_code" },
-                { title: "Doc Type", data: "doc_type" },
-                { title: "Qty Doc", data: "qty_doc" },
-                { title: "Qty Cancelled", data: "qty_cancelled" }
-            ],
-        });
-
-        return () => {
-            if (tableInstance.current) {
-                tableInstance.current.destroy();
-            }
-        };
-    }, [outstandingPrData]);
+        return new Intl.NumberFormat('en-US', {
+            minimumFractionDigits,
+            maximumFractionDigits,
+        }).format(number);
+    };
     return (
         <div>
             <div class="card m-5 p-0">
@@ -143,34 +270,97 @@ const OutstandingPRTable = () => {
                                 <button id="exportExcel" class="text-right py-1 px-3 font-medium rounded-md border border-gray-400"><i class="ri-printer-line text-md"></i> PRINT</button>
                                 
                                 <div className="relative">
-                                    <button onClick={() => setShowColumn(!showColumn)} id="exportExcel" class="text-right py-1 px-3 font-medium rounded-md border border-gray-400"><i class="ri-layout-vertical-line text-md"></i> Columns</button>
+                                    <button onClick={() => setShowColumn(!showColumn)} class="text-right py-1 px-3 font-medium rounded-md border border-gray-400"><i class="ri-layout-vertical-line text-md"></i> Columns</button>
                                     {showColumn && (
-                                        <div className="absolute top-full mt-2 right-0 w-auto bg-white dark:bg-slate-800 border border-gray-200 dark:border-darkborder rounded-lg shadow-xl p-1 z-50">
-                                            <div class="grid grid-cols-1 gap-3">
-                                                {showColumn && (
-                                                    <div>
-                                                        {/* 👉 RENDER DI SINI */}
-                                                        {columns.map(col => (
-                                                            <label key={col.index} className="inline-flex cursor-pointer">
+                                        <div className="absolute min-w-96 mt-2 right-0 bg-white dark:bg-slate-800 border border-gray-200 rounded-lg shadow-xl p-4 z-50 whitespace-nowrap dark:text-black">
+                                            <div className="flex flex-col gap-3">
+    
+                                                {/* CHECK ALL */}
+                                                <label className="flex items-center border-b pb-2 font-semibold cursor-pointer">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={isAllChecked}
+                                                        onChange={toggleAllColumns}
+                                                        className="mr-2 cursor-pointer"
+                                                    />
+                                                    <span>Check All Columns</span>
+                                                </label>
+                                                <div className="flex gap-3">
+                                                    <div className="flex-1 flex flex-col">
+                                                        {col1.map(col => (
+                                                            <label key={col.index} className="flex items-center cursor-pointer">
                                                                 <input
                                                                     type="checkbox"
-                                                                    defaultChecked
+                                                                    checked={visibleColumns.includes(col.index)}
                                                                     onChange={() => toggleColumn(col.index)}
-                                                                    class="form-checkbox text-primary"
+                                                                    className="mr-2 cursor-pointer"
                                                                 />
-                                                                <span>&nbsp;{col.label}</span>
+                                                                <span>{col.label}</span>
                                                             </label>
                                                         ))}
                                                     </div>
-                                                )}
+
+                                                    {/* COL 2 */}
+                                                    <div className="flex-1 flex flex-col">
+                                                        {col2.map(col => (
+                                                            <label key={col.index} className="flex items-center cursor-pointer">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={visibleColumns.includes(col.index)}
+                                                                    onChange={() => toggleColumn(col.index)}
+                                                                    className="mr-2 cursor-pointer"
+                                                                />
+                                                                <span>{col.label}</span>
+                                                            </label>
+                                                        ))}
+                                                    </div>
+
+                                                    {/* COL 3 */}
+                                                    <div className="flex-1 flex flex-col">
+                                                        {col3.map(col => (
+                                                            <label key={col.index} className="flex items-center cursor-pointer">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={visibleColumns.includes(col.index)}
+                                                                    onChange={() => toggleColumn(col.index)}
+                                                                    className="mr-2 cursor-pointer"
+                                                                />
+                                                                <span>{col.label}</span>
+                                                            </label>
+                                                        ))}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     )}
                                 </div>
                             </div>
                         </div>
-                        <div class="w-full overflow-x-auto">
-                            <table ref={tableRef} className="display" style={{ width: "100%" }} />
+                        <div className="relative overflow-x-auto w-full">
+                            {loading && (
+                                <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+                                    <div className="flex flex-col items-center gap-2">
+                                        <i className="ri-loader-4-line animate-spin text-3xl"></i>
+                                        <span className="text-sm font-medium">Loading...</span>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TABLE */}
+                            <div className={`${loading ? "blur-sm pointer-events-none" : ""}`}>
+                                <table id="outstandingPRTable" className="border min-w-full border-spacing-0 table-auto">
+                                    <thead className="text-left">
+                                        <tr>
+                                            {columns.map(col => (
+                                                <th key={col.index}>{col.label}</th>
+                                            ))}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
