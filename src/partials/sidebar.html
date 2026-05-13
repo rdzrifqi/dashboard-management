@@ -65,7 +65,7 @@
                     </a>
                     <ul class="sub-menu overflow-hidden max-h-0 transition-all duration-300 ease-in-out flex flex-col gap-1 text-black"></ul>
                 `;
-                feather.replace();
+                
                 const submenu = li.querySelector(".sub-menu");
                 const toggleBtn = li.querySelector(".menu-toggle");
                 const arrow = li.querySelector(".arrow");
@@ -150,6 +150,7 @@
                 });
                 menuContainer.appendChild(li);
             });
+            feather.replace();
         } catch (error) {
             console.error("error:", error);
         }
