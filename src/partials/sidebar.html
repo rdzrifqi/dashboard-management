@@ -57,13 +57,13 @@
                             <i data-feather="${parent.logo}" class="size-4 ml-3 text-dark dark:text-white"></i>
                             <span class="ltr:pl-1 rtl:pr-1.5">&nbsp;${parent.page_label}</span>
                         </div>
-                        <span class="arrow transition-transform">
+                        <span class="arrow transition-transform duration-300">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 h-6">
                                 <path d="M7 10l5 5 5-5" fill="currentColor"/>
                             </svg>
                         </span>
                     </a>
-                    <ul class="flex flex-col gap-1 text-black sub-menu hidden"></ul>
+                    <ul class="sub-menu overflow-hidden max-h-0 transition-all duration-300 ease-in-out flex flex-col gap-1 text-black"></ul>
                 `;
                 feather.replace();
                 const submenu = li.querySelector(".sub-menu");
@@ -89,7 +89,25 @@
                     });
                     
                 if (hasActiveChild) {
-                    submenu.classList.remove("hidden");
+                    toggleBtn.classList.add(
+                        "text-blue-400",
+                        "dark:text-blue-400",
+                        "font-bold"
+                    );
+                    const parentIcon = li.querySelector("i");
+                    if (parentIcon) {
+                        parentIcon.classList.add(
+                            "text-blue-600",
+                            "dark:text-blue-400"
+                        );
+                    }
+
+                    submenu.classList.add("open");
+
+                    requestAnimationFrame(() => {
+                        submenu.style.maxHeight = submenu.scrollHeight + "px";
+                    });
+
                     arrow.classList.add("rotate-180");
                     submenu.dataset.active = "true";
                 } else {
@@ -102,23 +120,34 @@
                     const allSubmenus = document.querySelectorAll("#clavis_menu .sub-menu");
                     const allArrows = document.querySelectorAll("#clavis_menu .arrow");
 
+                    const isOpen = submenu.classList.contains("open");
+
+                    // tutup semua submenu lain
                     allSubmenus.forEach((el) => {
-                        // ❗ jangan tutup yang aktif
-                        if (el !== submenu && el.dataset.active !== "true") {
-                            el.classList.add("hidden");
+                        if (el !== submenu) {
+                            el.classList.remove("open");
+                            el.style.maxHeight = "0px";
                         }
                     });
 
+                    // reset arrow lain
                     allArrows.forEach((el) => {
                         if (el !== arrow) {
                             el.classList.remove("rotate-180");
                         }
                     });
 
-                    submenu.classList.toggle("hidden");
-                    arrow.classList.toggle("rotate-180");
+                    // toggle current
+                    if (isOpen) {
+                        submenu.classList.remove("open");
+                        submenu.style.maxHeight = "0px";
+                        arrow.classList.remove("rotate-180");
+                    } else {
+                        submenu.classList.add("open");
+                        submenu.style.maxHeight = submenu.scrollHeight + "px";
+                        arrow.classList.add("rotate-180");
+                    }
                 });
-                console.log(li);
                 menuContainer.appendChild(li);
             });
         } catch (error) {
