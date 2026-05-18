@@ -54,7 +54,7 @@
                 li.innerHTML = `
                     <a href="javascript:void(0);" class="menu-toggle flex items-center justify-between text-black nav-link group cursor-pointer">
                         <div class="flex items-center">
-                            <i data-feather="${parent.logo}" class="size-4 ml-3 text-dark dark:text-white"></i>
+                            <i data-feather="${parent.logo}" class="size-4 ml-3 text-dark text-lg dark:text-white"></i>
                             <span class="ltr:pl-1 rtl:pr-1.5">&nbsp;${parent.page_label}</span>
                         </div>
                         <span class="arrow transition-transform duration-300">
@@ -63,7 +63,7 @@
                             </svg>
                         </span>
                     </a>
-                    <ul class="sub-menu overflow-hidden max-h-0 transition-all duration-300 ease-in-out flex flex-col gap-1 text-black"></ul>
+                    <ul class="sub-menu overflow-hidden transition-all duration-300 ease-in-out flex flex-col gap-1 text-black"></ul>
                 `;
                 
                 const submenu = li.querySelector(".sub-menu");
@@ -81,8 +81,9 @@
 
                         subLi.innerHTML = `
                             <a href="${child.page_name}.html"
-                            class="block text-black dark:text-white py-1 ${isActive ? 'text-blue-600 dark:text-yellow-500 font-semibold ' : ''}">
-                                <i class="${child.logo}"></i>&nbsp;&nbsp;<p>${child.page_label}</p>
+                            class="flex items-center text-black dark:text-white py-1 ${isActive ? 'text-blue-600 dark:text-yellow-500 font-semibold' : ''}">
+                                ${child.logo ? `<i class="${child.logo}"></i>` : ''}
+                                <span class="ml-2">${child.page_label}</span>
                             </a>
                         `;
                         submenu.appendChild(subLi);
