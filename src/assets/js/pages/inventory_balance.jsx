@@ -42,6 +42,7 @@ const InventoryBalanceTable = () => {
     const fetchData = (page = 1) => {
         const offset = (page - 1) * limit;
 
+        setLoading(true);
         axios.get(`${__ODOO_URL__}/api/odoo/inventory-balance?search=${searchText}&limit=${limit}&offset=${offset}`)
             .then(res => {
                 const result = res.data;
@@ -50,7 +51,11 @@ const InventoryBalanceTable = () => {
                 setTotal(result.data.pagination.total || 0);
                 setCurrentPage(page);
             })
-            .catch(err => console.error(err));
+            .catch(err => console.error(err))
+            
+            .finally(() => {
+                setLoading(false);
+            });
     };
     useEffect(() => {
         fetchData(1);
@@ -90,6 +95,16 @@ const InventoryBalanceTable = () => {
         return rangeWithDots;
     };
     const pages = getPagination(currentPage, totalPages);
+    const allChecked = visibleColumns.length === columns.length;
+
+    const handleCheckAll = () => {
+        if (allChecked) {
+            setVisibleColumns([]);
+        } else {
+            setVisibleColumns(columns.map(col => col.index));
+        }
+    };
+    const [loading, setLoading] = useState(false);
     return (
         <div className="dark:bg-dark">
             <div class="card m-5 p-0">
@@ -167,6 +182,14 @@ const InventoryBalanceTable = () => {
                                     <button onClick={() => setShowColumn(!showColumn)} id="exportExcel" class="text-right py-1 px-3 font-medium rounded-md border border-gray-400"><i class="ri-layout-vertical-line text-md"></i> Columns</button>
                                     {showColumn && (
                                         <div className="absolute top-full mt-2 right-0 w-auto bg-white dark:bg-slate-800 border border-gray-200 dark:border-darkborder rounded-lg shadow-xl p-1 z-50 dark:text-black">
+                                            {/* <label className="flex items-center border-b pb-2 font-semibold cursor-pointer text-black dark:text-black">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={allChecked}
+                                                    onChange={handleCheckAll}
+                                                    className="mr-2 cursor-pointer"
+                                                />Check All Columns
+                                            </label> */}
                                             <div class="grid grid-cols-1 gap-3">
                                                 {showColumn && (
                                                     <div>
@@ -190,37 +213,52 @@ const InventoryBalanceTable = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="overflow-auto">
-                            <table border="1">
-                                <thead class="text-left" style={{backgroundColor:'#0d2b5e'}}>
-                                    <tr>
-                                        <th class="text-white w-12 sticky left-0 bg-black dark:bg-blue-950 z-4">No</th>
-                                        {columns.map(col => 
-                                            visibleColumns.includes(col.index) && (
-                                                <th key={col.index} className="text-white">
-                                                    {col.label}
-                                                </th>
-                                            )
-                                            
-                                        )}
-                                        <th className="text-white sticky right-0 bg-gray-700 dark:bg-blue-950 z-10">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {inventoryBalanceData.map((item, index) => (
-                                        <tr key={index} className="align-top">
-                                            <td className="sticky left-0 bg-white dark:bg-dark z-4">{(currentPage - 1) * limit + index + 1}</td>
-                                            {visibleColumns.includes(1) && <td>{item.brand}</td>}
-                                            {visibleColumns.includes(2) && <td>{item.product_code}</td>}
-                                            {visibleColumns.includes(3) && <td>{item.product_name}</td>}
-                                            {visibleColumns.includes(4) && <td>{item.location}</td>}
-                                            {visibleColumns.includes(5) && <td>{item.std_pack}</td>}
-                                            {visibleColumns.includes(6) && <td>{item.balance_qty}</td>}
-                                            <td className="sticky right-0 bg-white dark:bg-dark z-10"><i class="ri-eye-line"></i><i class="ri-printer-line ml-3"></i></td>
+                        <div className="relative">
+                            {loading && (
+                                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-white/60 dark:bg-black/40 backdrop-blur-[2px] rounded-md">
+                                    
+                                    <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-white mb-3">
+                                        <i className="ri-loader-4-line animate-spin text-lg"></i>
+                                        Loading data...
+                                    </div>
+
+                                    <div className="w-64 h-2 bg-gray-200 rounded-full overflow-hidden dark:bg-slate-700">
+                                        <div className="h-full bg-blue-600 animate-pulse w-full"></div>
+                                    </div>
+                                </div>
+                            )}
+                            <div className={`overflow-x-auto w-full transition duration-200 ${loading ? "blur-sm brightness-50 scale-[0.99] pointer-events-none select-none" : ""}`}>
+                                <table border="1">
+                                    <thead class="text-left" style={{backgroundColor:'#0d2b5e'}}>
+                                        <tr>
+                                            <th class="text-white w-12 sticky left-0 bg-black dark:bg-blue-950 z-4">No</th>
+                                            {columns.map(col => 
+                                                visibleColumns.includes(col.index) && (
+                                                    <th key={col.index} className="text-white">
+                                                        {col.label}
+                                                    </th>
+                                                )
+                                                
+                                            )}
+                                            <th className="text-white sticky right-0 bg-gray-700 dark:bg-blue-950 z-10">Actions</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {inventoryBalanceData.map((item, index) => (
+                                            <tr key={index} className="align-top">
+                                                <td className="sticky left-0 bg-white dark:bg-dark z-4">{(currentPage - 1) * limit + index + 1}</td>
+                                                {visibleColumns.includes(1) && <td>{item.brand}</td>}
+                                                {visibleColumns.includes(2) && <td>{item.product_code}</td>}
+                                                {visibleColumns.includes(3) && <td>{item.product_name}</td>}
+                                                {visibleColumns.includes(4) && <td>{item.location}</td>}
+                                                {visibleColumns.includes(5) && <td>{item.std_pack}</td>}
+                                                {visibleColumns.includes(6) && <td>{item.balance_qty}</td>}
+                                                <td className="sticky right-0 bg-white dark:bg-dark z-10"><i class="ri-eye-line"></i><i class="ri-printer-line ml-3"></i></td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                         <div class="pt-3 text-right">
                             <button 

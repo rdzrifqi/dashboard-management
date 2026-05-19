@@ -3,49 +3,49 @@ const SoSummaryTable = () => {
     const tableRef = useRef();
     const [soSummaryData, setSoSummaryData] = useState([]);
     const columns = [
-        { label: "SO No", index: 1, default:true },
-        { label: "SO Date", index: 2, default:true },
-        { label: "Cust PO No", index: 3, default:true },
-        { label: "No PO Pengganti", index: 4, default:true },
-        { label: "No PO Original", index: 5, default:true },
-        { label: "Cancel Status", index: 6, default:true },
-        { label: "Cancel Remark", index: 7, default:false },
-        { label: "DO No", index: 8, default:false },
-        { label: "DO Date", index: 9, default:false },
-        { label: "DO DOc Received By", index: 10, default:false },
-        { label: "Do Doc Received At", index: 11, default:false },
-        { label: "SI No", index: 12, default:false },
-        { label: "SI Date", index: 13, default:false },
-        { label: "Cust BPB No", index: 14, default:false },
-        { label: "Customer Code", index: 15, default:false },
-        { label: "Customer Name", index: 16, default:false },
-        { label: "Bill To Address", index: 17, default:false },
-        { label: "DC Code", index: 18, default:false },
-        { label: "Ship To", index: 19, default:false },
-        { label: "City", index: 20, default:false },
-        { label: "Area", index: 21, default:false },
-        { label: "Ship To Address", index: 22, default:false },
-        { label: "Requested Delivery Date", index: 23, default:false },
-        { label: "Credit Terms", index: 24, default:false },
-        { label: "Shipped By", index: 25, default:false },
-        { label: "Total Product", index: 26, default:false },
-        { label: "SO Qty PCS", index: 27, default:false },
-        { label: "DO Qty PCS", index: 28, default:false },
-        { label: "SI Qty PCS", index: 29, default:false },
-        { label: "SO Qty CTN", index: 30, default:false },
-        { label: "DO Qty CTN", index: 31, default:false },
-        { label: "SI Qty CTN", index: 32, default:false },
-        { label: "SO Amt Bef. Tax", index: 33, default:false },
-        { label: "DO Amt Bef. Tax", index: 34, default:false },
-        { label: "SI Amt Bef. Tax", index: 35, default:false },
-        { label: "SO Total CBM", index: 36, default:false },
-        { label: "SO Total KGS", index: 37, default:false },
-        { label: "DO Total CBM", index: 38, default:false },
-        { label: "DO Total KGS", index: 39, default:false },
-        { label: "Created By", index: 40, default:false },
-        { label: "Created At", index: 41, default:false },
-        { label: "Updated By", index: 42, default:false },
-        { label: "Updated At", index: 43, default:false },
+        { label: "SO No", index: 2, default:true },
+        { label: "SO Date", index: 3, default:true },
+        { label: "Cust PO No", index: 4, default:true },
+        { label: "No PO Pengganti", index: 5, default:true },
+        { label: "No PO Original", index: 6, default:true },
+        { label: "Cancel Status", index: 7, default:true },
+        { label: "Cancel Remark", index: 8, default:false },
+        { label: "DO No", index: 9, default:false },
+        { label: "DO Date", index: 10, default:false },
+        { label: "DO DOc Received By", index: 11, default:false },
+        { label: "Do Doc Received At", index: 12, default:false },
+        { label: "SI No", index: 13, default:false },
+        { label: "SI Date", index: 14, default:false },
+        { label: "Cust BPB No", index: 15, default:false },
+        { label: "Customer Code", index: 16, default:false },
+        { label: "Customer Name", index: 17, default:false },
+        { label: "Bill To Address", index: 18, default:false },
+        { label: "DC Code", index: 19, default:false },
+        { label: "Ship To", index: 20, default:false },
+        { label: "City", index: 21, default:false },
+        { label: "Area", index: 22, default:false },
+        { label: "Ship To Address", index: 23, default:false },
+        { label: "Requested Delivery Date", index: 24, default:false },
+        { label: "Credit Terms", index: 25, default:false },
+        { label: "Shipped By", index: 26, default:false },
+        { label: "Total Product", index: 27, default:false },
+        { label: "SO Qty PCS", index: 28, default:false },
+        { label: "DO Qty PCS", index: 29, default:false },
+        { label: "SI Qty PCS", index: 30, default:false },
+        { label: "SO Qty CTN", index: 31, default:false },
+        { label: "DO Qty CTN", index: 32, default:false },
+        { label: "SI Qty CTN", index: 33, default:false },
+        { label: "SO Amt Bef. Tax", index: 34, default:false },
+        { label: "DO Amt Bef. Tax", index: 35, default:false },
+        { label: "SI Amt Bef. Tax", index: 36, default:false },
+        { label: "SO Total CBM", index: 37, default:false },
+        { label: "SO Total KGS", index: 38, default:false },
+        { label: "DO Total CBM", index: 39, default:false },
+        { label: "DO Total KGS", index: 40, default:false },
+        { label: "Created By", index: 41, default:false },
+        { label: "Created At", index: 42, default:false },
+        { label: "Updated By", index: 43, default:false },
+        { label: "Updated At", index: 44, default:false },
     ];
     const [loading, setLoading] = useState(false);
     const [showColumn, setShowColumn] = useState(false);
@@ -175,6 +175,15 @@ const SoSummaryTable = () => {
                 tableRef.current = $('#soSummaryTable').DataTable({
                     data: soSummaryData,
                     columns: [
+                        {
+                            data: null,
+                            title: "No",
+                            orderable: false,
+                            searchable: false,
+                            render: function (data, type, row, meta) {
+                                return meta.row + 1;
+                            }
+                        },
                         { data: "so_no", title: "SO No" },
                         {
                             data: "so_date",
@@ -271,7 +280,7 @@ const SoSummaryTable = () => {
                     autoWidth: true,
                     columnDefs: [
                         ...columns.map((col, i) => ({
-                            targets: i,
+                            targets: i + 1,
                             visible: visibleColumns.includes(col.index)
                         })),
                     ]
@@ -279,6 +288,14 @@ const SoSummaryTable = () => {
             } else {
                 tableRef.current.clear().rows.add(soSummaryData).draw();
             }
+            tableRef.current.on('order.dt search.dt draw.dt', function () {
+                tableRef.current
+                    .column(0, { search: 'applied', order: 'applied' })
+                    .nodes()
+                    .each(function (cell, i) {
+                        cell.innerHTML = i + 1;
+                    });
+            });
         }
     }, [soSummaryData]);
     const formatDate = (dateString) => {
@@ -463,7 +480,7 @@ const SoSummaryTable = () => {
 
                             {/* TABLE */}
                             <div className={`${loading ? "blur-sm pointer-events-none" : ""}`}>
-                                <table id="soSummaryTable" className="border min-w-full border-spacing-0 table-auto">
+                                <table id="soSummaryTable" className="min-w-full table-auto">
                                     <thead className="text-left">
                                         <tr>
                                             {columns.map(col => (

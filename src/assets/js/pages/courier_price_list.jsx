@@ -64,6 +64,7 @@ const CourierTable = () => {
     }, []);
     const fetchData = (page = 1) => {
         const offset = (page - 1) * limit;
+        setLoading(true);
 
         axios.get(`${__ODOO_URL__}/api/odoo/courier-price-list?search=${searchText}&limit=${limit}&offset=${offset}`)
             .then(res => {
@@ -73,7 +74,11 @@ const CourierTable = () => {
                 setTotal(result.data.pagination.total || 0);
                 setCurrentPage(page);
             })
-            .catch(err => console.error(err));
+            .catch(err => console.error(err))
+            
+            .finally(() => {
+                setLoading(false);
+            });
     };
 
     useEffect(() => {
@@ -114,6 +119,16 @@ const CourierTable = () => {
         return rangeWithDots;
     };
     const pages = getPagination(currentPage, totalPages);
+    const allChecked = visibleColumns.length === columns.length;
+
+    const handleCheckAll = () => {
+        if (allChecked) {
+            setVisibleColumns([]);
+        } else {
+            setVisibleColumns(columns.map(col => col.index));
+        }
+    };
+    const [loading, setLoading] = useState(false);
     return (
         <div className="dark:bg-dark">
             <div class="card m-5 p-0">
@@ -123,11 +138,11 @@ const CourierTable = () => {
                 <div class="grid grid-cols-4 p-4 gap-4">
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Date From</label>
-                        <input type="date" class="border border-gray-300 dark:bg-dark rounded-md"/>
+                        <input type="date" class="border border-gray-300 dark:bg-dark rounded-md date-input"/>
                     </div>
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Date To</label>
-                        <input type="date" class="border border-gray-300 dark:bg-dark rounded-md"/>
+                        <input type="date" class="border border-gray-300 dark:bg-dark rounded-md date-input"/>
                     </div>
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Distribution Center</label>
@@ -191,6 +206,14 @@ const CourierTable = () => {
                                     <button onClick={() => setShowColumn(!showColumn)} id="exportExcel" class="text-right py-1 px-3 font-medium rounded-md border border-gray-400"><i class="ri-layout-vertical-line"></i> Columns</button>
                                     {showColumn && (
                                         <div className="absolute min-w-96 mt-2 right-0 bg-white dark:bg-slate-800 border border-gray-200 rounded-lg shadow-xl p-4 z-50 whitespace-nowrap">
+                                            <label className="flex items-center border-b pb-2 font-semibold cursor-pointer text-black dark:text-black">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={allChecked}
+                                                    onChange={handleCheckAll}
+                                                    className="mr-2 cursor-pointer"
+                                                />Check All Columns
+                                            </label>
                                             <div className="flex gap-3">
                                                 <div className="flex-1 flex flex-col">
                                                     {col1.map(col => (
@@ -241,90 +264,105 @@ const CourierTable = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="overflow-x-auto w-full">
-                            <table className="table-fixed min-w-max border">
+                        <div className="relative">
+                            {loading && (
+                                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-white/60 dark:bg-black/40 backdrop-blur-[2px] rounded-md">
+                                    
+                                    <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-white mb-3">
+                                        <i className="ri-loader-4-line animate-spin text-lg"></i>
+                                        Loading data...
+                                    </div>
+
+                                    <div className="w-64 h-2 bg-gray-200 rounded-full overflow-hidden dark:bg-slate-700">
+                                        <div className="h-full bg-blue-600 animate-pulse w-full"></div>
+                                    </div>
+                                </div>
+                            )}
+                            <div className={`overflow-x-auto w-full transition duration-200 ${loading ? "blur-sm brightness-50 scale-[0.99] pointer-events-none select-none" : ""}`}>
+                                <table className="table-fixed min-w-max">
                                 
-                                <colgroup>
-                                    {/* No */}
-                                    <col style={{ width: "50px" }} />
+                                    <colgroup>
+                                        {/* No */}
+                                        <col style={{ width: "50px" }} />
 
-                                    {/* Dynamic Columns */}
-                                    {columns.map(col => 
-                                        visibleColumns.includes(col.index) && (
-                                            <col
-                                                key={col.index}
-                                                style={
-                                                col.index === 3
-                                                    ? { width: "390px" } // ✅ Address FIX
-                                                    : { width: "200px" } // default kolom lain
-                                                }
-                                            />
-                                        )
-                                    )}
-                                    <col style={{ width: "80px" }} />
-                                </colgroup>
-
-                                <thead className="text-left" style={{backgroundColor:'#0d2b5e'}}>
-                                    <tr>
-                                        <th className="text-white sticky left-0 bg-black dark:bg-blue-950 z-4">No</th>
+                                        {/* Dynamic Columns */}
                                         {columns.map(col => 
                                             visibleColumns.includes(col.index) && (
-                                                <th key={col.index} className="text-white">
-                                                    {col.label}
-                                                </th>
+                                                <col
+                                                    key={col.index}
+                                                    style={
+                                                    col.index === 3
+                                                        ? { width: "390px" } // ✅ Address FIX
+                                                        : { width: "200px" } // default kolom lain
+                                                    }
+                                                />
                                             )
                                         )}
-                                        <th className="text-white sticky right-0 bg-gray-700 dark:bg-blue-950 z-10">Actions</th>
-                                    </tr>
-                                </thead>
+                                        <col style={{ width: "80px" }} />
+                                    </colgroup>
 
-                                <tbody>
-                                    {courierData.map((item, index) => (
-                                        <tr key={index} className="align-top">
-                                        <td className="sticky left-0 bg-white dark:bg-dark z-4">{(currentPage - 1) * limit + index + 1}</td>
-                                            {visibleColumns.includes(1) && (
-                                                <td className="break-words whitespace-normal">
-                                                    {item.customer_name}
-                                                </td>
+                                    <thead className="text-left" style={{backgroundColor:'#0d2b5e'}}>
+                                        <tr>
+                                            <th className="text-white sticky left-0 bg-black dark:bg-blue-950 z-4">No</th>
+                                            {columns.map(col => 
+                                                visibleColumns.includes(col.index) && (
+                                                    <th key={col.index} className="text-white">
+                                                        {col.label}
+                                                    </th>
+                                                )
                                             )}
-                                            {visibleColumns.includes(2) && <td>{item.dc_code}</td>}
-
-                                            {/* Address */}
-                                            {visibleColumns.includes(3) && (
-                                                <td className="break-words whitespace-normal">
-                                                    {item.address}
-                                                </td>
-                                            )}
-
-                                            {visibleColumns.includes(4) && <td>{item.zip}</td>}
-                                            {visibleColumns.includes(5) && <td>{item.pulau}</td>}
-                                            {visibleColumns.includes(6) && <td>{item.propinsi}</td>}
-                                            {visibleColumns.includes(7) && <td>{item.kabupaten}</td>}
-                                            {visibleColumns.includes(8) && <td>{item.kecamatan}</td>}
-                                            {visibleColumns.includes(9) && <td>{item.kelurahan}</td>}
-                                            {visibleColumns.includes(10) && <td>{item.freight_type}</td>}
-                                            {visibleColumns.includes(11) && <td>{item.vendor}</td>}
-                                            {visibleColumns.includes(12) && <td>{item.service}</td>}
-                                            {visibleColumns.includes(13) && <td>{item.city_code}</td>}
-                                            {visibleColumns.includes(14) && <td>{item.prev_effective_code}</td>}
-                                            {visibleColumns.includes(15) && <td>{item.prev_leadtime}</td>}
-                                            {visibleColumns.includes(16) && <td>{item.prev_min_kgs}</td>}
-                                            {visibleColumns.includes(17) && <td>{item.prev_price}</td>}
-                                            {visibleColumns.includes(18) && <td>{item.latest_effective_code}</td>}
-                                            {visibleColumns.includes(19) && <td>{item.latest_leadtime}</td>}
-                                            {visibleColumns.includes(20) && <td>{item.latest_min_kgs}</td>}
-                                            {visibleColumns.includes(21) && <td>{item.latest_price}</td>}
-                                            {visibleColumns.includes(22) && <td>{item.diff_price}</td>}
-                                            {visibleColumns.includes(23) && <td>{item.latest_doc_leadtime}</td>}
-                                            {visibleColumns.includes(24) && <td>{item.latest_doc_price}</td>}
-                                            {visibleColumns.includes(25) && <td>{item.lowest_min_kgs}</td>}
-                                            {visibleColumns.includes(26) && <td>{item.lowest_price}</td>}
-                                            {visibleColumns.includes(27) && <td>{item.base_vendor}</td>}
-                                            <td className="sticky right-0 bg-white dark:bg-dark z-10"><i class="ri-eye-line"></i><i class="ri-printer-line ml-3"></i></td>
+                                            <th className="text-white sticky right-0 bg-gray-700 dark:bg-blue-950 z-10">Actions</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+
+                                    <tbody>
+                                        {courierData.map((item, index) => (
+                                            <tr key={index} className="align-top">
+                                            <td className="sticky left-0 bg-white dark:bg-dark z-4">{(currentPage - 1) * limit + index + 1}</td>
+                                                {visibleColumns.includes(1) && (
+                                                    <td className="break-words whitespace-normal">
+                                                        {item.customer_name}
+                                                    </td>
+                                                )}
+                                                {visibleColumns.includes(2) && <td>{item.dc_code}</td>}
+
+                                                {/* Address */}
+                                                {visibleColumns.includes(3) && (
+                                                    <td className="break-words whitespace-normal">
+                                                        {item.address}
+                                                    </td>
+                                                )}
+
+                                                {visibleColumns.includes(4) && <td>{item.zip}</td>}
+                                                {visibleColumns.includes(5) && <td>{item.pulau}</td>}
+                                                {visibleColumns.includes(6) && <td>{item.propinsi}</td>}
+                                                {visibleColumns.includes(7) && <td>{item.kabupaten}</td>}
+                                                {visibleColumns.includes(8) && <td>{item.kecamatan}</td>}
+                                                {visibleColumns.includes(9) && <td>{item.kelurahan}</td>}
+                                                {visibleColumns.includes(10) && <td>{item.freight_type}</td>}
+                                                {visibleColumns.includes(11) && <td>{item.vendor}</td>}
+                                                {visibleColumns.includes(12) && <td>{item.service}</td>}
+                                                {visibleColumns.includes(13) && <td>{item.city_code}</td>}
+                                                {visibleColumns.includes(14) && <td>{item.prev_effective_code}</td>}
+                                                {visibleColumns.includes(15) && <td>{item.prev_leadtime}</td>}
+                                                {visibleColumns.includes(16) && <td>{item.prev_min_kgs}</td>}
+                                                {visibleColumns.includes(17) && <td>{item.prev_price}</td>}
+                                                {visibleColumns.includes(18) && <td>{item.latest_effective_code}</td>}
+                                                {visibleColumns.includes(19) && <td>{item.latest_leadtime}</td>}
+                                                {visibleColumns.includes(20) && <td>{item.latest_min_kgs}</td>}
+                                                {visibleColumns.includes(21) && <td>{item.latest_price}</td>}
+                                                {visibleColumns.includes(22) && <td>{item.diff_price}</td>}
+                                                {visibleColumns.includes(23) && <td>{item.latest_doc_leadtime}</td>}
+                                                {visibleColumns.includes(24) && <td>{item.latest_doc_price}</td>}
+                                                {visibleColumns.includes(25) && <td>{item.lowest_min_kgs}</td>}
+                                                {visibleColumns.includes(26) && <td>{item.lowest_price}</td>}
+                                                {visibleColumns.includes(27) && <td>{item.base_vendor}</td>}
+                                                <td className="sticky right-0 bg-white dark:bg-dark z-10"><i class="ri-eye-line"></i><i class="ri-printer-line ml-3"></i></td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
 
                         {/* Pagination */}

@@ -5,7 +5,26 @@
     {{> partials/title-meta title="ST Corp dahboard  - development by: clavisdev" }}
 
     {{> partials/head-css }}
+    <script>
+        document.addEventListener('alpine:initialized', () => {
+            const app = Alpine.store('app');
+            const applyMode = () => {
+                if (app.mode === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            };
 
+            // initial
+            applyMode();
+
+            // watch perubahan
+            Alpine.effect(() => {
+                applyMode();
+            });
+        });
+    </script>
     <style>
         /* Pastikan elemen peta punya tinggi, kalau tidak peta tidak akan terlihat */
         html,body { height: 100%; margin: 0; }
@@ -15,6 +34,42 @@
         #sellOutCustomerTable thead th {
             background-color: #2d4169; /* biru */
             color: white;
+        }
+        #sellOutCustomerTable_length select{
+            width: 6vh;
+            margin-bottom: 6px;
+        }
+        #sellOutCustomerTable_wrapper thead th {
+            background-color: rgb(23 37 84) !important; /* blue-950 */
+            color: white !important;
+        }
+        #sellOutCustomerTable th:first-child,
+        #sellOutCustomerTable thead th:first-child {
+            z-index: 30;
+        }
+        .dataTables_scrollHead table th:first-child {
+            position: sticky !important;
+            left: 0;
+            z-index: 60;
+            background-color: rgb(23 37 84) !important;
+            color: white !important;
+        }
+
+        /* STICKY BODY */
+        .dataTables_scrollBody table td:first-child {
+            position: sticky !important;
+            left: 0;
+            z-index: 50;
+            background-color: #ffffff !important;
+            color: black !important;
+        }
+
+        /* DARK MODE */
+        .dark .dataTables_scrollBody table tbody tr td:first-child,
+        .dark .dataTables_scrollBody table tbody tr.odd td:first-child,
+        .dark .dataTables_scrollBody table tbody tr.even td:first-child {
+            background-color: #111827 !important;
+            color: white !important;
         }
     </style>
 </head>

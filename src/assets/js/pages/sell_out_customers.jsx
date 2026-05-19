@@ -3,44 +3,44 @@ const SellOutCustomerTable = () => {
     const tableRef = useRef();
     const [sellOutCustomerData, setSellOutCustomerData] = useState([]);
     const columns = [
-        { label: "Cust PO No", index: 1, default:true },
-        { label: "PO Date", index: 2, default:true },
-        { label: "SO No", index: 3, default:true },
-        { label: "GRN No", index: 4, default:true },
-        { label: "GRN Date", index: 5, default:true },
-        { label: "DO No", index: 6, default:true },
-        { label: "DO Date", index: 7, default:false },
-        { label: "Shipment Date", index: 8, default:false },
-        { label: "POD Date", index: 9, default:false },
-        { label: "Cust GR No", index: 10, default:false },
-        { label: "Exp Date", index: 11, default:false },
-        { label: "SI No", index: 12, default:false },
-        { label: "SI Date", index: 13, default:false },
-        { label: "eFaktur NO", index: 14, default:false },
-        { label: "Tgl. Kirim Faktur", index: 15, default:false },
-        { label: "Jatuh Tempo Bayar", index: 16, default:false },
-        { label: "No. Kwitansi", index: 17, default:false },
-        { label: "No. TTF", index: 18, default:false },
-        { label: "Customer", index: 19, default:false },
-        { label: "Customer Alias", index: 20, default:false },
-        { label: "DC Name", index: 21, default:false },
-        { label: "Area", index: 22, default:false },
-        { label: "Total SKU", index: 23, default:false },
-        { label: "Qty SO", index: 24, default:false },
-        { label: "Qty SO CTN", index: 25, default:false },
-        { label: "Qty GR", index: 26, default:false },
-        { label: "Qty GRN CTN", index: 27, default:false },
-        { label: "Qty DO", index: 28, default:false },
-        { label: "Qty DO CTN", index: 29, default:false },
-        { label: "DO M3", index: 30, default:false },
-        { label: "DO KGS", index: 31, default:false },
-        { label: "Qty SI", index: 32, default:false },
-        { label: "Qty SI CTN", index: 33, default:false },
-        { label: "DO Amt Bef. Tax", index: 34, default:false },
-        { label: "SI Amt Bef. Tax", index: 35, default:false },
-        { label: "Last Status", index: 36, default:false },
-        { label: "last Update", index: 37, default:false },
-        { label: "Messages", index: 38, default:false },
+        { label: "Cust PO No", index: 2, default:true },
+        { label: "PO Date", index: 3, default:true },
+        { label: "SO No", index: 4, default:true },
+        { label: "GRN No", index: 5, default:true },
+        { label: "GRN Date", index: 6, default:true },
+        { label: "DO No", index: 7, default:true },
+        { label: "DO Date", index: 8, default:false },
+        { label: "Shipment Date", index: 9, default:false },
+        { label: "POD Date", index: 10, default:false },
+        { label: "Cust GR No", index: 11, default:false },
+        { label: "Exp Date", index: 12, default:false },
+        { label: "SI No", index: 13, default:false },
+        { label: "SI Date", index: 14, default:false },
+        { label: "eFaktur NO", index: 15, default:false },
+        { label: "Tgl. Kirim Faktur", index: 16, default:false },
+        { label: "Jatuh Tempo Bayar", index: 17, default:false },
+        { label: "No. Kwitansi", index: 18, default:false },
+        { label: "No. TTF", index: 19, default:false },
+        { label: "Customer", index: 20, default:false },
+        { label: "Customer Alias", index: 21, default:false },
+        { label: "DC Name", index: 22, default:false },
+        { label: "Area", index: 23, default:false },
+        { label: "Total SKU", index: 24, default:false },
+        { label: "Qty SO", index: 25, default:false },
+        { label: "Qty SO CTN", index: 26, default:false },
+        { label: "Qty GR", index: 27, default:false },
+        { label: "Qty GRN CTN", index: 28, default:false },
+        { label: "Qty DO", index: 29, default:false },
+        { label: "Qty DO CTN", index: 30, default:false },
+        { label: "DO M3", index: 31, default:false },
+        { label: "DO KGS", index: 32, default:false },
+        { label: "Qty SI", index: 33, default:false },
+        { label: "Qty SI CTN", index: 34, default:false },
+        { label: "DO Amt Bef. Tax", index: 35, default:false },
+        { label: "SI Amt Bef. Tax", index: 36, default:false },
+        { label: "Last Status", index: 37, default:false },
+        { label: "last Update", index: 38, default:false },
+        { label: "Messages", index: 39, default:false },
     ];
     const [loading, setLoading] = useState(false);
     const [showColumn, setShowColumn] = useState(false);
@@ -165,6 +165,15 @@ const SellOutCustomerTable = () => {
                 tableRef.current = $('#sellOutCustomerTable').DataTable({
                     data: sellOutCustomerData,
                     columns: [
+                        {
+                            data: null,
+                            title: "No",
+                            orderable: false,
+                            searchable: false,
+                            render: function (data, type, row, meta) {
+                                return meta.row + 1;
+                            }
+                        },
                         { data: "cust_po_no", title: "Cust PO No" },
                         {
                             data: "po_date",
@@ -274,7 +283,7 @@ const SellOutCustomerTable = () => {
                     autoWidth: true,
                     columnDefs: [
                         ...columns.map((col, i) => ({
-                            targets: i,
+                            targets: i + 1,
                             visible: visibleColumns.includes(col.index)
                         })),
                     ]
@@ -282,6 +291,14 @@ const SellOutCustomerTable = () => {
             } else {
                 tableRef.current.clear().rows.add(sellOutCustomerData).draw();
             }
+            tableRef.current.on('order.dt search.dt draw.dt', function () {
+                tableRef.current
+                    .column(0, { search: 'applied', order: 'applied' })
+                    .nodes()
+                    .each(function (cell, i) {
+                        cell.innerHTML = i + 1;
+                    });
+            });
         }
     }, [sellOutCustomerData]);
     const formatDate = (dateString) => {
@@ -465,7 +482,7 @@ const SellOutCustomerTable = () => {
 
                             {/* TABLE */}
                             <div className={`${loading ? "blur-sm pointer-events-none" : ""}`}>
-                                <table id="sellOutCustomerTable" className="border min-w-full border-spacing-0 table-auto">
+                                <table id="sellOutCustomerTable" className="min-w-full table-auto">
                                     <thead className="text-left">
                                         <tr>
                                             {columns.map(col => (

@@ -374,11 +374,30 @@ function SalesInvoiceDimCard(){
                 <div class="grid grid-cols-4 p-4 gap-4">
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Start Date</label>
-                        <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} class="border border-gray-300 rounded-md dark:bg-dark" />
+                        <input type="date" value={startDate}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            if (value > endDate) {
+                                alert("Start Date tidak boleh melebihi End Date");
+                                return;
+                            }else{
+                                setStartDate(value);
+                            }
+                        }} class="border border-gray-300 rounded-md dark:bg-dark dark:text-white date-input"/>
                     </div>
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">End Date</label>
-                        <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)}  class="border border-gray-300 rounded-md dark:bg-dark"/>
+                        <input type="date" value={endDate}
+                        onChange={(e) => {
+                            const value = e.target.value;
+
+                            if (value < startDate) {
+                                alert("End Date tidak boleh kurang dari Start Date");
+                                return;
+                            }else{
+                                setEndDate(value);
+                            }
+                        }} class="border border-gray-300 rounded-md dark:bg-dark dark:text-white date-input"/>
                     </div>
                 </div>
             </div>

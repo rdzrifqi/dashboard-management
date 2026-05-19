@@ -57,6 +57,7 @@ const DcTable = () => {
     }, []);
     const fetchData = (page = 1) => {
         const offset = (page - 1) * limit;
+        setLoading(true);
 
         axios.get(`${__ODOO_URL__}/api/odoo/dc?search=${searchText}&limit=${limit}&offset=${offset}`)
             .then(res => {
@@ -66,7 +67,11 @@ const DcTable = () => {
                 setTotal(result.data.pagination.total || 0);
                 setCurrentPage(page);
             })
-            .catch(err => console.error(err));
+            .catch(err => console.error(err))
+            
+            .finally(() => {
+                setLoading(false);
+            });
     };
     useEffect(() => {
         fetchData(1);
@@ -106,6 +111,16 @@ const DcTable = () => {
         return rangeWithDots;
     };
     const pages = getPagination(currentPage, totalPages);
+    const allChecked = visibleColumns.length === columns.length;
+
+    const handleCheckAll = () => {
+        if (allChecked) {
+            setVisibleColumns([]);
+        } else {
+            setVisibleColumns(columns.map(col => col.index));
+        }
+    };
+    const [loading, setLoading] = useState(false);
     return (
         <div className="dark:bg-dark">
             <div class="card m-5 p-0">
@@ -115,11 +130,11 @@ const DcTable = () => {
                 <div class="grid grid-cols-4 p-4 gap-4">
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Date From</label>
-                        <input type="date" class="border border-gray-300 rounded-md dark:bg-dark"/>
+                        <input type="date" class="border border-gray-300 rounded-md dark:bg-dark text-black dark:text-white date-input"/>
                     </div>
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Date To</label>
-                        <input type="date" class="border border-gray-300 rounded-md dark:bg-dark"/>
+                        <input type="date" class="border border-gray-300 rounded-md dark:bg-dark date-input"/>
                     </div>
                     <div class="flex flex-col">
                         <label class="pb-2 font-medium">Distribution Center</label>
@@ -183,6 +198,14 @@ const DcTable = () => {
                                     <button onClick={() => setShowColumn(!showColumn)} id="exportExcel" class="text-right py-1 px-3 font-medium rounded-md border border-gray-400"><i class="ri-layout-vertical-line text-md"></i> Columns</button>
                                     {showColumn && (
                                         <div className="absolute min-w-96 mt-2 right-0 bg-white dark:bg-slate-800 border border-gray-200 rounded-lg shadow-xl p-4 z-50 whitespace-nowrap dark:text-black">
+                                            <label className="flex items-center border-b pb-2 font-semibold cursor-pointer text-black dark:text-black">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={allChecked}
+                                                    onChange={handleCheckAll}
+                                                    className="mr-2 cursor-pointer"
+                                                />Check All Columns
+                                            </label>
                                             <div className="flex gap-3">
                                                 <div className="flex-1 flex flex-col">
                                                     {col1.map(col => (
@@ -233,54 +256,69 @@ const DcTable = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="overflow-auto">
-                            <table border="1">
-                                <thead class="text-left" style={{backgroundColor:'#0d2b5e'}}>
-                                    <tr>
-                                        <th className="text-white sticky left-0 dark:bg-blue-950 z-4">No</th>
-                                        {columns.map(col => 
-                                            visibleColumns.includes(col.index) && (
-                                                <th key={col.index} className="text-white">
-                                                    {col.label}
-                                                </th>
-                                            )
-                                            
-                                        )}
-                                        <th className="text-white sticky right-0 bg-gray-700 dark:bg-blue-950 z-10">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {dcData.map((item, index) => (
-                                        <tr key={index} className="align-top">
-                                            <td className="sticky left-0 bg-white dark:bg-dark z-4">{(currentPage - 1) * limit + index + 1}</td>
-                                            {visibleColumns.includes(1) && <td>{item.approved_by}</td>}
-                                            {visibleColumns.includes(2) && <td>{item.approved_at}</td>}
-                                            {visibleColumns.includes(3) && <td>{item.customer.id}</td>}
-                                            {visibleColumns.includes(4) && <td>{item.customer.name}</td>}
-                                            {visibleColumns.includes(5) && <td>{item.dc_code}</td>}
-                                            {visibleColumns.includes(6) && <td>{item.dc_name}</td>}
-                                            {visibleColumns.includes(7) && <td>{item.city}</td>}
-                                            {visibleColumns.includes(8) && <td>{item.area}</td>}
-                                            {visibleColumns.includes(9) && <td>{item.min_lead_day}</td>}
-                                            {visibleColumns.includes(10) && <td>{item.max_lead_day}</td>}
-                                            {visibleColumns.includes(11) && (
-                                            <td className="break-words whitespace-normal">
-                                                {item.dc_address}
-                                            </td>
+                        <div className="relative">
+                            {loading && (
+                                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-white/60 dark:bg-black/40 backdrop-blur-[2px] rounded-md">
+                                    
+                                    <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-white mb-3">
+                                        <i className="ri-loader-4-line animate-spin text-lg"></i>
+                                        Loading data...
+                                    </div>
+
+                                    <div className="w-64 h-2 bg-gray-200 rounded-full overflow-hidden dark:bg-slate-700">
+                                        <div className="h-full bg-blue-600 animate-pulse w-full"></div>
+                                    </div>
+                                </div>
+                            )}
+                            <div className={`overflow-x-auto w-full transition duration-200 ${loading ? "blur-sm brightness-50 scale-[0.99] pointer-events-none select-none" : ""}`}>
+                                <table border="1">
+                                    <thead class="text-left" style={{backgroundColor:'#0d2b5e'}}>
+                                        <tr>
+                                            <th className="text-white sticky left-0 bg-gray-700 dark:bg-blue-950 z-4">No</th>
+                                            {columns.map(col => 
+                                                visibleColumns.includes(col.index) && (
+                                                    <th key={col.index} className="text-white">
+                                                        {col.label}
+                                                    </th>
+                                                )
+                                                
                                             )}
-                                            {visibleColumns.includes(12) && <td>{item.phone_1}</td>}
-                                            {visibleColumns.includes(13) && <td>{item.phone_2}</td>}
-                                            {visibleColumns.includes(14) && <td>{item.zip}</td>}
-                                            {visibleColumns.includes(15) && <td>{item.pulau}</td>}
-                                            {visibleColumns.includes(16) && <td>{item.propinsi}</td>}
-                                            {visibleColumns.includes(17) && <td>{item.kabupaten}</td>}
-                                            {visibleColumns.includes(18) && <td>{item.kecamatan}</td>}
-                                            {visibleColumns.includes(19) && <td>{item.kelurahan}</td>}
-                                            <td className="sticky right-0 bg-white dark:bg-dark z-10"><i class="ri-eye-line"></i><i class="ri-printer-line ml-3"></i></td>
+                                            <th className="text-white sticky right-0 bg-gray-700 dark:bg-blue-950 z-10">Actions</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {dcData.map((item, index) => (
+                                            <tr key={index} className="align-top">
+                                                <td className="sticky left-0 bg-white dark:bg-dark z-4">{(currentPage - 1) * limit + index + 1}</td>
+                                                {visibleColumns.includes(1) && <td>{item.approved_by}</td>}
+                                                {visibleColumns.includes(2) && <td>{item.approved_at}</td>}
+                                                {visibleColumns.includes(3) && <td>{item.customer.id}</td>}
+                                                {visibleColumns.includes(4) && <td>{item.customer.name}</td>}
+                                                {visibleColumns.includes(5) && <td>{item.dc_code}</td>}
+                                                {visibleColumns.includes(6) && <td>{item.dc_name}</td>}
+                                                {visibleColumns.includes(7) && <td>{item.city}</td>}
+                                                {visibleColumns.includes(8) && <td>{item.area}</td>}
+                                                {visibleColumns.includes(9) && <td>{item.min_lead_day}</td>}
+                                                {visibleColumns.includes(10) && <td>{item.max_lead_day}</td>}
+                                                {visibleColumns.includes(11) && (
+                                                <td className="break-words whitespace-normal">
+                                                    {item.dc_address}
+                                                </td>
+                                                )}
+                                                {visibleColumns.includes(12) && <td>{item.phone_1}</td>}
+                                                {visibleColumns.includes(13) && <td>{item.phone_2}</td>}
+                                                {visibleColumns.includes(14) && <td>{item.zip}</td>}
+                                                {visibleColumns.includes(15) && <td>{item.pulau}</td>}
+                                                {visibleColumns.includes(16) && <td>{item.propinsi}</td>}
+                                                {visibleColumns.includes(17) && <td>{item.kabupaten}</td>}
+                                                {visibleColumns.includes(18) && <td>{item.kecamatan}</td>}
+                                                {visibleColumns.includes(19) && <td>{item.kelurahan}</td>}
+                                                <td className="sticky right-0 bg-white dark:bg-dark z-10"><i class="ri-eye-line"></i><i class="ri-printer-line ml-3"></i></td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                         <div class="pt-3 text-right">
                             <button 

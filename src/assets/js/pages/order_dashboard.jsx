@@ -3,19 +3,19 @@ const OrderDashboardTable = () => {
     const tableRef = useRef();
     const [orderDashboardData, setOrderDashboardData] = useState([]);
     const columns = [
-        { label: "DC", index: 1, default:true },
-        { label: "Area", index: 2, default:true },
-        { label: "City", index: 3, default:true },
-        { label: "Trans", index: 4, default:true },
-        { label: "PO No", index: 5, default:true },
-        { label: "PO Date", index: 6, default:true },
-        { label: "CTN", index: 7, default:false },
-        { label: "PO", index: 8, default:false },
-        { label: "GRN", index: 9, default:false },
-        { label: "DO Date", index: 10, default:false },
-        { label: "Delivered", index: 11, default:false },
-        { label: "Days", index: 12, default:false },
-        { label: "Exp Date", index: 13, default:false },
+        { label: "DC", index: 2, default:true },
+        { label: "Area", index: 3, default:true },
+        { label: "City", index: 4, default:true },
+        { label: "Trans", index: 5, default:true },
+        { label: "PO No", index: 6, default:true },
+        { label: "PO Date", index: 7, default:true },
+        { label: "CTN", index: 8, default:false },
+        { label: "PO", index: 9, default:false },
+        { label: "GRN", index: 10, default:false },
+        { label: "DO Date", index: 11, default:false },
+        { label: "Delivered", index: 12, default:false },
+        { label: "Days", index: 13, default:false },
+        { label: "Exp Date", index: 14, default:false },
     ];
     const [loading, setLoading] = useState(false);
     const [showColumn, setShowColumn] = useState(false);
@@ -124,6 +124,15 @@ const OrderDashboardTable = () => {
                 tableRef.current = $('#orderDashboardTable').DataTable({
                     data: orderDashboardData,
                     columns: [
+                        {
+                            data: null,
+                            title: "No",
+                            orderable: false,
+                            searchable: false,
+                            render: function (data, type, row, meta) {
+                                return meta.row + 1;
+                            }
+                        },
                         { data: "dc", title: "DC" },
                         { data: "area", title: "Area" },
                         { data: "city", title: "City" },
@@ -178,7 +187,7 @@ const OrderDashboardTable = () => {
                     autoWidth: true,
                     columnDefs: [
                         ...columns.map((col, i) => ({
-                            targets: i,
+                            targets: i + 1,
                             visible: visibleColumns.includes(col.index)
                         })),
                     ]
@@ -186,6 +195,14 @@ const OrderDashboardTable = () => {
             } else {
                 tableRef.current.clear().rows.add(orderDashboardData).draw();
             }
+            tableRef.current.on('order.dt search.dt draw.dt', function () {
+                tableRef.current
+                    .column(0, { search: 'applied', order: 'applied' })
+                    .nodes()
+                    .each(function (cell, i) {
+                        cell.innerHTML = i + 1;
+                    });
+            });
         }
     }, [orderDashboardData]);
     return (
@@ -337,9 +354,10 @@ const OrderDashboardTable = () => {
 
                             {/* TABLE */}
                             <div className={`${loading ? "blur-sm pointer-events-none" : ""}`}>
-                                <table id="orderDashboardTable" className="border min-w-full border-spacing-0 table-auto">
+                                <table id="orderDashboardTable" className="min-w-full table-auto">
                                     <thead className="text-left">
                                         <tr>
+                                            <th>No</th>
                                             {columns.map(col => (
                                                 <th key={col.index}>{col.label}</th>
                                             ))}

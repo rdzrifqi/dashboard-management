@@ -86,6 +86,7 @@ const MtiStatutorySalesTable = () => {
     
     const fetchData = (page = 1) => {
         const offset = (page - 1) * limit;
+        setLoading(true);
 
         axios.get(`${__ODOO_URL__}/api/odoo/statutory-sales-report?search=${searchText}&limit=${limit}&offset=${offset}`)
             .then(res => {
@@ -95,7 +96,11 @@ const MtiStatutorySalesTable = () => {
                 setTotal(result.data.pagination.total || 0);
                 setCurrentPage(page);
             })
-            .catch(err => console.error(err));
+            .catch(err => console.error(err))
+            
+            .finally(() => {
+                setLoading(false);
+            });
     };
     useEffect(() => {
         fetchData(1);
@@ -135,6 +140,16 @@ const MtiStatutorySalesTable = () => {
         return rangeWithDots;
     };
     const pages = getPagination(currentPage, totalPages);
+    const allChecked = visibleColumns.length === columns.length;
+
+    const handleCheckAll = () => {
+        if (allChecked) {
+            setVisibleColumns([]);
+        } else {
+            setVisibleColumns(columns.map(col => col.index));
+        }
+    };
+    const [loading, setLoading] = useState(false);
     const formatDate = (dateString) => {
         if (!dateString) return "-";
 
@@ -222,6 +237,14 @@ const MtiStatutorySalesTable = () => {
                                     <button onClick={() => setShowColumn(!showColumn)} id="exportExcel" class="text-right py-1 px-3 font-medium rounded-md border border-gray-400"><i class="ri-layout-vertical-line text-md"></i> Columns</button>
                                     {showColumn && (
                                         <div className="absolute min-w-96 mt-2 right-0 bg-white dark:bg-slate-800 border border-gray-200 rounded-lg shadow-xl p-4 z-50 whitespace-nowrap dark:text-black">
+                                            <label className="flex items-center border-b pb-2 font-semibold cursor-pointer text-black dark:text-black">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={allChecked}
+                                                    onChange={handleCheckAll}
+                                                    className="mr-2 cursor-pointer"
+                                                />Check All Columns
+                                            </label>
                                             <div className="flex gap-3">
                                                 <div className="flex-1 flex flex-col">
                                                     {col1.map(col => (
@@ -272,78 +295,94 @@ const MtiStatutorySalesTable = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="overflow-auto">
-                            <table border="1">
-                                <thead class="text-left" style={{backgroundColor:'#0d2b5e'}}>
-                                    <tr>
-                                        <th class="text-white w-12 sticky left-0 bg-black dark:bg-blue-950 z-4">No</th>
-                                        {columns.map(col => 
-                                            visibleColumns.includes(col.index) && (
-                                                <th key={col.index} className="text-white">
-                                                    {col.label}
-                                                </th>
-                                            )
-                                            
-                                        )}
-                                        <th className="text-white sticky right-0 bg-gray-700 z-10">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {mtiStatutorySalesData.map((item, index) => (
-                                        <tr key={index} className="align-top">
-                                            <td className="sticky left-0 bg-white dark:bg-dark z-4">{(currentPage - 1) * limit + index + 1}</td>
-                                            {visibleColumns.includes(1) && <td>{item.cust_po_no}</td>}
-                                            {visibleColumns.includes(2) && <td>{item.new_cust_po_no}</td>}
-                                            {visibleColumns.includes(3) && <td>{formatDate(item.cust_po_date)}</td>}
-                                            {visibleColumns.includes(4) && <td>{item.gr_date}</td>}
-                                            {visibleColumns.includes(5) && <td>{item.po_no}</td>}
-                                            {visibleColumns.includes(6) && <td>{item.po_date}</td>}
-                                            {visibleColumns.includes(7) && <td>{item.po_qty}</td>}
-                                            {visibleColumns.includes(8) && <td>{item.gr_no}</td>}
-                                            {visibleColumns.includes(9) && <td>{item.gr_qty}</td>}
-                                            {visibleColumns.includes(10) && <td>{item.pi_no}</td>}
-                                            {visibleColumns.includes(11) && <td>{item.pi_ref_no}</td>}
-                                            {visibleColumns.includes(12) && <td>{item.pi_date}</td>}
-                                            {visibleColumns.includes(13) && <td>{item.pi_qty}</td>}
-                                            {visibleColumns.includes(14) && <td>{item.so_no}</td>}
-                                            {visibleColumns.includes(15) && <td>{item.so_date}</td>}
-                                            {visibleColumns.includes(16) && <td>{item.so_qty}</td>}
-                                            {visibleColumns.includes(17) && <td>{item.leadtime}</td>}
-                                            {visibleColumns.includes(18) && <td>{item.req_delivery_date}</td>}
-                                            {visibleColumns.includes(19) && <td>{item.do_no}</td>}
-                                            {visibleColumns.includes(20) && <td>{item.do_date}</td>}
-                                            {visibleColumns.includes(21) && <td>{item.do_qty}</td>}
-                                            {visibleColumns.includes(22) && <td>{item.pod_date}</td>}
-                                            {visibleColumns.includes(23) && <td>{item.pod_qty}</td>}
-                                            {visibleColumns.includes(24) && <td>{item.si_no}</td>}
-                                            {visibleColumns.includes(25) && <td>{item.si_date}</td>}
-                                            {visibleColumns.includes(26) && <td>{item.si_qty}</td>}
-                                            {visibleColumns.includes(27) && <td>{item.pr_no}</td>}
-                                            {visibleColumns.includes(28) && <td>{item.pr_date}</td>}
-                                            {visibleColumns.includes(29) && <td>{item.pr_qty}</td>}
-                                            {visibleColumns.includes(30) && <td>{item.customer}</td>}
-                                            {visibleColumns.includes(31) && <td>{item.ship_to}</td>}
-                                            {visibleColumns.includes(32) && <td>{item.gr_pi_amt_bef_tax}</td>}
-                                            {visibleColumns.includes(33) && <td>{item.gr_pi_tax_amt}</td>}
-                                            {visibleColumns.includes(34) && <td>{item.gr_pi_amt_aft_tax}</td>}
-                                            {visibleColumns.includes(35) && <td>{item.do_rbp_amt_bef_tax}</td>}
-                                            {visibleColumns.includes(36) && <td>{item.si_rbp_amt_bef_tax}</td>}
-                                            {visibleColumns.includes(37) && <td>{item.pr_amt_bef_tax}</td>}
-                                            {visibleColumns.includes(38) && <td>{item.po_qty_2}</td>}
-                                            {visibleColumns.includes(39) && <td>{item.gr_qty_2}</td>}
-                                            {visibleColumns.includes(40) && <td>{item.pi_qty_2}</td>}
-                                            {visibleColumns.includes(41) && <td>{item.so_qty_2}</td>}
-                                            {visibleColumns.includes(42) && <td>{item.do_qty_2}</td>}
-                                            {visibleColumns.includes(43) && <td>{item.pod_qty_2}</td>}
-                                            {visibleColumns.includes(44) && <td>{item.si_qty_2}</td>}
-                                            {visibleColumns.includes(45) && <td>{item.pr_qty_2}</td>}
-                                            {visibleColumns.includes(46) && <td>{item.messages}</td>}
-                                            <td className="sticky right-0 bg-white dark:bg-dark z-10"><i class="ri-eye-line"></i><i class="ri-printer-line ml-3"></i></td>
+                        <div className="relative">
+                            {loading && (
+                                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-white/60 dark:bg-black/40 backdrop-blur-[2px] rounded-md">
+                                    
+                                    <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-white mb-3">
+                                        <i className="ri-loader-4-line animate-spin text-lg"></i>
+                                        Loading data...
+                                    </div>
+
+                                    <div className="w-64 h-2 bg-gray-200 rounded-full overflow-hidden dark:bg-slate-700">
+                                        <div className="h-full bg-blue-600 animate-pulse w-full"></div>
+                                    </div>
+                                </div>
+                            )}
+                            <div className={`overflow-x-auto w-full transition duration-200 ${loading ? "blur-sm brightness-50 scale-[0.99] pointer-events-none select-none" : ""}`}>
+                                <table border="1">
+                                    <thead class="text-left" style={{backgroundColor:'#0d2b5e'}}>
+                                        <tr>
+                                            <th class="text-white w-12 sticky left-0 bg-black dark:bg-blue-950 z-4">No</th>
+                                            {columns.map(col => 
+                                                visibleColumns.includes(col.index) && (
+                                                    <th key={col.index} className="text-white">
+                                                        {col.label}
+                                                    </th>
+                                                )
+                                                
+                                            )}
+                                            <th className="text-white sticky right-0 bg-gray-700 z-10">Actions</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {mtiStatutorySalesData.map((item, index) => (
+                                            <tr key={index} className="align-top">
+                                                <td className="sticky left-0 bg-white dark:bg-dark z-4">{(currentPage - 1) * limit + index + 1}</td>
+                                                {visibleColumns.includes(1) && <td>{item.cust_po_no}</td>}
+                                                {visibleColumns.includes(2) && <td>{item.new_cust_po_no}</td>}
+                                                {visibleColumns.includes(3) && <td>{formatDate(item.cust_po_date)}</td>}
+                                                {visibleColumns.includes(4) && <td>{item.gr_date}</td>}
+                                                {visibleColumns.includes(5) && <td>{item.po_no}</td>}
+                                                {visibleColumns.includes(6) && <td>{item.po_date}</td>}
+                                                {visibleColumns.includes(7) && <td>{item.po_qty}</td>}
+                                                {visibleColumns.includes(8) && <td>{item.gr_no}</td>}
+                                                {visibleColumns.includes(9) && <td>{item.gr_qty}</td>}
+                                                {visibleColumns.includes(10) && <td>{item.pi_no}</td>}
+                                                {visibleColumns.includes(11) && <td>{item.pi_ref_no}</td>}
+                                                {visibleColumns.includes(12) && <td>{item.pi_date}</td>}
+                                                {visibleColumns.includes(13) && <td>{item.pi_qty}</td>}
+                                                {visibleColumns.includes(14) && <td>{item.so_no}</td>}
+                                                {visibleColumns.includes(15) && <td>{item.so_date}</td>}
+                                                {visibleColumns.includes(16) && <td>{item.so_qty}</td>}
+                                                {visibleColumns.includes(17) && <td>{item.leadtime}</td>}
+                                                {visibleColumns.includes(18) && <td>{item.req_delivery_date}</td>}
+                                                {visibleColumns.includes(19) && <td>{item.do_no}</td>}
+                                                {visibleColumns.includes(20) && <td>{item.do_date}</td>}
+                                                {visibleColumns.includes(21) && <td>{item.do_qty}</td>}
+                                                {visibleColumns.includes(22) && <td>{item.pod_date}</td>}
+                                                {visibleColumns.includes(23) && <td>{item.pod_qty}</td>}
+                                                {visibleColumns.includes(24) && <td>{item.si_no}</td>}
+                                                {visibleColumns.includes(25) && <td>{item.si_date}</td>}
+                                                {visibleColumns.includes(26) && <td>{item.si_qty}</td>}
+                                                {visibleColumns.includes(27) && <td>{item.pr_no}</td>}
+                                                {visibleColumns.includes(28) && <td>{item.pr_date}</td>}
+                                                {visibleColumns.includes(29) && <td>{item.pr_qty}</td>}
+                                                {visibleColumns.includes(30) && <td>{item.customer}</td>}
+                                                {visibleColumns.includes(31) && <td>{item.ship_to}</td>}
+                                                {visibleColumns.includes(32) && <td>{item.gr_pi_amt_bef_tax}</td>}
+                                                {visibleColumns.includes(33) && <td>{item.gr_pi_tax_amt}</td>}
+                                                {visibleColumns.includes(34) && <td>{item.gr_pi_amt_aft_tax}</td>}
+                                                {visibleColumns.includes(35) && <td>{item.do_rbp_amt_bef_tax}</td>}
+                                                {visibleColumns.includes(36) && <td>{item.si_rbp_amt_bef_tax}</td>}
+                                                {visibleColumns.includes(37) && <td>{item.pr_amt_bef_tax}</td>}
+                                                {visibleColumns.includes(38) && <td>{item.po_qty_2}</td>}
+                                                {visibleColumns.includes(39) && <td>{item.gr_qty_2}</td>}
+                                                {visibleColumns.includes(40) && <td>{item.pi_qty_2}</td>}
+                                                {visibleColumns.includes(41) && <td>{item.so_qty_2}</td>}
+                                                {visibleColumns.includes(42) && <td>{item.do_qty_2}</td>}
+                                                {visibleColumns.includes(43) && <td>{item.pod_qty_2}</td>}
+                                                {visibleColumns.includes(44) && <td>{item.si_qty_2}</td>}
+                                                {visibleColumns.includes(45) && <td>{item.pr_qty_2}</td>}
+                                                {visibleColumns.includes(46) && <td>{item.messages}</td>}
+                                                <td className="sticky right-0 bg-white dark:bg-dark z-10"><i class="ri-eye-line"></i><i class="ri-printer-line ml-3"></i></td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
+                        
                         <div class="pt-3 text-right">
                             <button 
                                 onClick={() => fetchData(currentPage - 1)} 
